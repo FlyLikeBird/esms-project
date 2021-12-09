@@ -1,0 +1,40 @@
+/* .form-container:global(.ant-form) :global(.ant-form-item){
+    display:inline-flex;
+    width:50%;
+    padding-right:20px;
+    color:#fff;
+} */
+
+.form-container:global(.ant-form) :global(.ant-form-item) :global(.ant-form-item-label) > label {
+    color:#fff;
+}
+/* form表单内多选模式Select样式 */
+/* .form-container:global(.ant-form) :global(.ant-form-item) :global(.ant-select-multiple) {
+    height:60px;
+}
+.form-container:global(.ant-form) :global(.ant-form-item) :global(.ant-select-multiple) > :global(.ant-select-selector) {
+    height:100%;
+} */
+/* 方案列表样式 */
+.list-container {
+    display:flex;
+    align-items: center;
+    height:100%;
+}
+
+.list-item {
+    height:100%;
+    padding:4px 10px;
+    margin-right:1rem;
+    background-color:rgba(255,255,255,0.1);
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    color:#fff;
+    border-radius:6px;
+    white-space:nowrap;
+}
+
+.list-item.selected {
+    background-color:#04a3fe;
+}

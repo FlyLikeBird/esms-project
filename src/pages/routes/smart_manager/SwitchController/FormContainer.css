@@ -1,0 +1,93 @@
+.form-container {
+    /* width:70%;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%); */
+    width:80%;
+    margin:0 auto;
+    padding-top:6rem;
+}
+
+.form-container > :global(.ant-row) {
+    border-top:1px solid #2b2b53;
+    border-bottom:1px solid #0c0c19;
+    padding:1rem 0;
+    align-items: center;
+    white-space:nowrap;
+}
+
+.form-container > :global(.ant-row):first-child {
+    border-top:none;
+}
+.form-container > :global(.ant-row):last-child {
+    border-bottom:none;
+}
+
+.form-container :global(.ant-form-item){
+    margin-bottom:0;
+    white-space:nowrap;
+}
+.form-container :global(.ant-form-item) :global(.ant-form-item-explain) {
+    position:absolute;
+    top:100%;
+}
+/* Input组件样式 */
+.form-container :global(.ant-form-item) :global(.ant-input-wrapper){
+    background:rgba(255,255,255,0.1);
+}
+.form-container :global(.ant-form-item) :global(.ant-input) {
+    background:rgba(255,255,255,0.1);
+    border:none;
+    color:#fff;
+}
+.form-container :global(.ant-form-item) :global(.ant-input-wrapper) :global(.ant-input) {
+    background:transparent;
+    border:none;
+    color:#fff;
+}
+
+.form-container :global(.ant-form-item) :global(.ant-input-wrapper) :global(.ant-input-affix-wrapper) {
+    background:transparent;
+    border:none;
+    color:#fff;
+}
+/* Checkbox组件样式 */
+.form-container :global(.ant-form-item) :global(.ant-checkbox-group) :global(.ant-checkbox-wrapper) {
+    color:#fff;
+}
+/* InputNumber组件样式 */
+.form-container :global(.ant-form-item) :global(.ant-input-number) {
+    background:rgba(255,255,255,0.1);
+    border:none;
+    color:#fff;
+}
+
+.form-container :global(.ant-form-item) :global(.ant-form-item-control-input) .tag {
+    color:#fff;
+    padding:0 1rem;
+}
+
+.form-container :global(.ant-form-item) :global(.ant-form-item-control-input) .tag :global(.anticon) {
+    margin:0 4px;
+}
+
+.form-container .info-text {
+    color:rgba(255, 255, 255, 0.5);
+    font-size:0.8rem;
+}
+/* Switch组件 */
+.form-container .custom-switch {
+    background-color:#585867;
+}
+.form-container .custom-switch:global(.ant-switch-checked) {
+    background-color:#1890ff;
+}
+
+
+/* 自动填充样式修改 */
+.form-container input:-webkit-autofill { 
+	box-shadow: 0 0 0px 1000px #303144 inset !important;
+	text-fill-color:#fff;
+	-webkit-text-fill-color: #fff;
+}

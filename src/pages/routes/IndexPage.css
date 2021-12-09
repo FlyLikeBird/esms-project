@@ -1,0 +1,926 @@
+html,body {
+    font-size:14px;
+}
+
+@media (max-width:1440px){
+    html, body{
+        font-size:10px;
+    }
+}
+
+.normal {
+  font-family: Georgia, sans-serif;
+  margin-top: 3em;
+  text-align: center;
+}
+
+.container {
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
+
+.main-content {
+    height:calc(100% - 60px);
+}
+
+.sidebar-container {
+    display:inline-block;
+    vertical-align: top;
+    width:10%;
+    height:100%;
+}
+
+.content-container {
+    display:inline-block;
+    vertical-align: top;
+    width:90%;
+    height:100%;
+    background-color:#ededed;
+}
+
+.tabs-container {
+    height:100%;
+}
+
+/* 标签页---选项卡样式 */
+.tabs-container > :global(.ant-tabs-nav){
+    height:40px;
+    margin:0;
+    padding:10px 0 0 20px;
+    background-color:#fff;
+}
+
+.tabs-container > :global(.ant-tabs-nav) > :global(.ant-tabs-nav-wrap) > :global(.ant-tabs-nav-list) > :global(.ant-tabs-tab){
+    margin-right:4px;
+    border:none;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-left: 1px solid #ededed;
+    border-right: 1px solid #ededed;
+    border-top: 1px solid #ededed;
+    background-color:#fff;
+}
+
+.tabs-container > :global(.ant-tabs-nav) > :global(.ant-tabs-nav-wrap) > :global(.ant-tabs-nav-list) > :global(.ant-tabs-tab-active) {
+    background-color:#ededed;    
+}
+
+.tabs-container > :global(.ant-tabs-nav) > :global(.ant-tabs-nav-wrap) > :global(.ant-tabs-nav-list) > :global(.ant-tabs-tab-active) > :global(.ant-tabs-tab-btn) {
+    background-color:#ededed;
+    color:rgba(0, 0, 0, 0.85);
+    font-weight:bold;    
+}
+
+/* 标签页 --- 内容区 */
+.tabs-container:global(.ant-tabs) > :global(.ant-tabs-content-holder) > :global(.ant-tabs-content) {
+    height:100%;
+}
+
+.tabs-container:global(.ant-tabs) > :global(.ant-tabs-content-holder) > :global(.ant-tabs-content) > :global(.ant-tabs-tabpane) {
+    height:100%;
+}
+
+.tabs-container:global(.ant-tabs) > :global(.ant-tabs-content-holder) > :global(.ant-tabs-content) > :global(.ant-tabs-tabpane) > div {
+    height:100%;
+}
+
+
+/* 
+    日期控件左右切换button 样式
+*/
+.date-picker-button-left, .date-picker-button-right {
+    background-color:#1545ff;
+    color:#fff;
+    width:2rem;
+    text-align: center;
+    cursor:pointer;
+    height:28px;
+    line-height:28px;
+}
+
+.date-picker-button-left {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+   
+}
+
+.date-picker-button-right {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.skeleton {
+    border-radius:4px;
+    background-color:#fff;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.container.dark .skeleton {
+    background:#191932 !important;
+}
+
+.container.dark .skeleton :global(.ant-skeleton-title), .container.dark .skeleton :global(.ant-skeleton-paragraph) > li {
+    background:#22264b !important;
+}
+
+/* 
+    ------自定义table组件全局样式
+*/
+.self-table-container:global(.ant-table-wrapper) {
+    padding:1rem;
+    background-color:#fff;
+    border:none;
+}
+.self-table-container:global(.ant-table-wrapper) :global(.ant-table) {
+    border-radius:6px;
+    background:none;
+}
+.container .self-table-container:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-container){
+    border-bottom:none;
+}
+.self-table-container:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-title){
+    padding:10px;
+    font-size:1rem;
+    font-weight:600;
+    color:#000;
+    border:none;
+}
+
+.self-table-container:global(.ant-table-wrapper) :global(.ant-table) table > thead > tr > th, .base-container:global(.ant-table-wrapper) :global(.ant-table) table > thead > tr > th {
+    padding:12px 10px;
+    border-right:1px solid #f0f0f0;
+    border-bottom:1px solid #f0f0f0;
+    color:#3c3d44;
+    font-weight:bold;
+    font-size:1rem;
+}
+.self-table-container:global(.ant-table-wrapper) :global(.ant-table) table tbody > tr > td.self-cell-wrapper {
+    padding:0;
+}
+.self-table-container.small:global(.ant-table-wrapper) :global(.ant-table) table > thead > tr > th {
+    padding:4px 10px;
+}
+.self-table-container.small:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr > td {
+    padding:4px 10px;
+}
+.self-table-container:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr > td, .base-container:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr > td {
+    padding:8px 10px;
+    border-right:1px solid #f0f0f0;
+    border-bottom:1px solid #f0f0f0;
+    font-size:1rem;
+}
+.self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-tbody) > tr > td:global(.multi-table-cell) > div > div{
+    border-bottom:1px solid #303463;
+}
+/* 自定义Table组件合并单元格样式 */
+.self-table-container:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-tbody) > tr > td:global(.multi-table-cell) {
+    padding:0;
+}
+.self-table-container:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-tbody) > tr > td:global(.multi-table-cell) > div > div{
+    padding:2px 10px;
+    border-bottom:1px solid #f0f0f0;
+}
+.self-table-container:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-tbody) > tr > td:global(.multi-table-cell) > div > div:last-child {
+    border-bottom:none !important;
+}
+.self-table-container:global(.ant-table-wrapper) :global(.ant-pagination) {
+    position:fixed;
+    right:20px;
+    bottom:10px;
+    margin:10px 0;
+    /* justify-content: flex-start; */
+}
+/* 深色Table组件样式 */
+.self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-container){
+    border:1px solid #303463;
+    border-bottom:none;
+}
+.self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-container) table {
+    border:none;
+}
+.self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) :global(.ant-table-title){
+    color:#fff;
+    background-color:#191a2f;
+}
+.self-table-container.dark:global(.ant-table-wrapper) {
+    background-color:#191932;
+}
+.self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) table > thead > tr > th {
+    color:rgba(255,255,255,0.6);
+    background-color:#22264b;
+    border-right:1px solid #1e2141 !important;
+    border-bottom:1px solid #1e2141 !important;
+    box-shadow: none;
+    font-size:1rem;
+}
+
+.self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr > td {
+    font-size:1rem;
+    background-color:#191932;
+    color:#fff;
+    border-right:1px solid #1e2141 !important;
+    border-bottom:1px solid #1e2141 !important;
+}
+.self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr:hover > td {
+    background-color:#14142a !important;
+}
+
+.self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr:nth-child(even) > td {
+    background-color:#23233f;
+}
+.self-table-container.dark.no-space:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr:nth-child(even) > td {
+    background-color:#191932;
+}
+/* 深色Table组件中Radio子组件样式 */
+.self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr > td :global(.ant-radio-wrapper-disabled) > span {
+    color:#fff;
+    font-size:0.8rem;
+}
+.self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr > td :global(.ant-radio-checked):global(.ant-radio-disabled) :global(.ant-radio-inner)::after{
+    background-color:#1890ff !important;
+}
+@media (max-width:1440px){
+    .self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) table > thead > tr > th {
+        padding:8px 6px;
+    }
+    .self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr > td {
+        padding:8px 6px;
+    }
+}
+/* 
+    ------自定义透明底table组件全局样式结束
+*/
+.custom-table:global(.ant-table-wrapper) :global(.ant-table) {
+    border:1px solid #30517d;
+}
+.custom-table:global(.ant-table-wrapper) :global(.ant-table) table > thead > tr > th {
+    color:#fff;
+    background-color:#30517d;
+    padding:6px 10px;
+    border:none;
+}
+.custom-table:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr > td {
+    background-color:#193e6f;
+    padding:6px 10px;
+    color:#fff;
+    border-bottom:1px solid #30517d;
+}
+/* 
+    -----自定义Tabs组件样式
+*/
+
+.custom-tabs:global(.ant-tabs) :global(.ant-tabs-bar){
+    background-color:#f7f8fa;
+}
+.custom-tabs:global(.ant-tabs) :global(.ant-tabs-bar){
+    border-bottom:none;
+    padding-left:20px;
+} 
+.container .custom-tabs:global(.ant-tabs) :global(.ant-tabs-nav){
+    background-color:#fafafa;
+    padding-left:1rem;
+    margin:0;
+}
+.container .custom-tabs:global(.ant-tabs) :global(.ant-tabs-nav) :global(.ant-tabs-tab){
+    padding:12px 4px;
+    color:rgba(255, 255, 255, 0.5);
+    font-size:0.8rem;
+}
+
+.container.dark .custom-tabs:global(.ant-tabs) :global(.ant-tabs-nav){
+    color:#585987;
+    background-color:#22264b;
+}
+.container .custom-tabs:global(.ant-tabs) :global(.ant-tabs-nav)::before{
+    border-bottom:none;
+}
+.container.dark .custom-tabs:global(.ant-tabs) :global(.ant-tabs-nav) :global(.ant-tabs-tab-active) {
+    color:#fff;
+    font-weight:bold;
+}
+.container.dark .custom-tabs:global(.ant-tabs) :global(.ant-tabs-nav) :global(.ant-tabs-tab-active) :global(.ant-tabs-tab-btn) {
+    color:#fff;
+}
+.container.dark .custom-tabs:global(.ant-tabs) :global(.ant-tabs-nav) :global(.ant-tabs-ink-bar) {
+    background-color:#1545ff;
+}
+@media (max-width:1440px){
+    .container .custom-tabs:global(.ant-tabs) :global(.ant-tabs-nav) :global(.ant-tabs-tab){
+        padding:6px 4px;
+        margin:0 0 0 24px
+    }
+}
+/* 
+    自定义卡片式Tabs组件样式
+*/
+.custom-tabs:global(.ant-tabs-card) :global(.ant-tabs-nav){
+    padding-top:20px !important;
+    
+}
+.custom-tabs:global(.ant-tabs-card) :global(.ant-tabs-nav) :global(.ant-tabs-tab){
+    padding:4px 10px !important;
+    margin-right:4px;
+}
+.container.dark .custom-tabs:global(.ant-tabs-card) :global(.ant-tabs-nav) :global(.ant-tabs-tab){
+    border:none;
+    background:#22264b;
+}
+.container.dark .custom-tabs:global(.ant-tabs-card) :global(.ant-tabs-nav) :global(.ant-tabs-tab):global(.ant-tabs-tab-active){
+    background:#191932;
+}
+/* 
+    自定义高度自适应Tabs组件
+*/
+.flex-tabs:global(.ant-tabs){
+    height:100%;
+}
+.flex-tabs:global(.ant-tabs) :global(.ant-tabs-content){
+    height:100%;
+}
+
+/* 
+    自定义树组件样式
+*/
+/* 侧边栏树结构防止换行 */
+.container :global(.ant-tree){
+    padding-top:1rem;
+}
+.container :global(.ant-tree) :global(.ant-tree-node-content-wrapper) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width:100px;
+    font-size:1rem;
+}
+.container :global(.ant-tree) :global(.ant-tree-node-content-wrapper):hover {
+    background-color:#f5f5f5;
+    color:#191932;
+}
+.container .custom-tree:global(.ant-tree) :global(.ant-tree-treenode):global(.ant-tree-treenode-disabled) :global(.ant-tree-node-content-wrapper){
+    color:#fff !important;
+}
+
+.container .custom-tree:global(.ant-tree) :global(.ant-tree-treenode):global(.selected-parent) :global(.ant-tree-node-content-wrapper){
+    background-color:rgba(108,108,108,0.5) !important;
+    color:#fff !important;
+}
+
+.container .custom-tree:global(.ant-tree) :global(.ant-tree-node-content-wrapper) {
+    /* background-color:#f7f8fa; */
+    padding:0 10px;
+}
+.container .custom-tree:global(.ant-tree) :global(.ant-tree-node-content-wrapper):global(.ant-tree-node-selected) {
+    background-color:#1545ff !important;
+    color:#fff !important;
+}
+.container.dark .custom-tree:global(.ant-tree){
+    background-color:#191932;
+    color:#fff;
+}
+.container.dark .custom-tree:global(.ant-tree) :global(.ant-tree-node-content-wrapper) {
+    /* background-color:#22264b;
+    color:#646499; */
+}
+/* 
+    自定义多选模式select，防止选中项过多超出屏幕范围
+*/
+.self-select-container:global(.ant-select) :global(.ant-select-selector){
+    height:300px;
+    overflow:hidden auto;
+}
+
+.page-container {
+    padding:1rem 1rem 0 1rem;
+    height:100%;
+    overflow:hidden;
+}
+
+/* 
+    全局Card组件样式
+*/
+.card-container-wrapper {
+    display:inline-block;
+    vertical-align: top;
+    width:100%;
+    height:100%;
+    padding-bottom:1rem;
+    padding-right:1rem;
+}
+
+.card-container {
+    height:100%;
+    background-color:#191932;
+    border-radius:4px;
+    position:relative;
+    color:rgba(0,0,0,.65);
+    box-shadow:0 4px 6px -4px #0000001f, 0 6px 10px #00000014;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+.card-container.topRadius {
+    border-radius:0;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+.card-container.bottomRadius{
+    border-radius:0;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius:4px;
+}
+.card-container .card-title {
+    height:2.4rem;
+    line-height:2.4rem;
+    font-size:1rem;
+    color:#fff;
+    font-weight:bold;
+    padding:0 1rem;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom:1px solid #272748;
+    white-space:nowrap;
+}
+
+.card-container .card-content {
+    height:calc( 100% - 2.4rem);
+    padding:1rem;
+    position:relative;
+}
+
+.card-container .button-container {
+    position:absolute;
+    top:6px;
+    right:6px;
+    z-index:2;
+}
+
+/* 滚动条样式 */
+.scroll-container {
+    overflow:auto;
+}
+
+.card-container::-webkit-scrollbar, .scroll-container::-webkit-scrollbar {
+    width:10px;
+    height:10px;
+}
+
+.card-container::-webkit-scrollbar-thumb, .scroll-container::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    background: #6464a4;
+}
+
+.card-container::-webkit-scrollbar-track, .scroll-container::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 2px 2px 4px rgba(0,0,0,0.8);
+    border-radius: 8px;
+    background:rgba(255,255,255,0.1);
+}
+.card-container::-webkit-scrollbar-track, .scroll-container::-webkit-scrollbar-corner {
+    background:rgba(255,255,255,0.1);
+}
+.card-container {
+    background-color:#191a2f;
+    color:#b0b0b0;
+}
+.card-title {
+    border-bottom:1px solid #2c2d40;
+}
+/* 
+    自定义Radio组件样式
+*/
+.container .custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper) {
+    background:transparent;
+    border-top:1px solid #d9d9d9;
+    border-bottom:1px solid #d9d9d9;
+    border-left:1px solid #d9d9d9;
+    border-right:none;
+    color:rgba(0, 0, 0, 0.65);
+    height:28px;
+    line-height:28px;
+    padding:0 10px;
+}
+.container .custom-radio.small:global(.ant-radio-group) :global(.ant-radio-button-wrapper) {
+    height:24px;
+    line-height:24px;
+}
+.container .custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper):hover {
+    background-color:#d9d9d9;
+    color:#fff;
+}
+.container .custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper):first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+.container .custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper):last-child {
+    /* border-left:none !important; */
+    border-right:1px solid #d9d9d9;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+.container .custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper)::before {
+    display:none;
+}
+.container .custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper):global(.ant-radio-button-wrapper-checked) {
+    color: #fff !important;
+    background:#1545ff;
+}
+.container .custom-date-picker:global(.ant-picker) {
+    background:transparent;
+    border:1px solid #1545ff;
+    height:28px;
+}
+
+.container .custom-date-picker:global(.ant-picker) :global(.anticon){
+    color:rgba(0, 0, 0, 0.65);
+}
+.container .custom-date-picker:global(.ant-picker) :global(.ant-picker-input) > input {
+    color:rgba(0, 0, 0, 0.65);
+}
+/* 日期组件深色模式 */
+.container.dark .custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper) {
+    border-top:1px solid #7a79b3;
+    border-bottom:1px solid #7a79b3;
+    border-left:1px solid #7a79b3;
+    border-right:none;
+    color:#7a79b3;
+}
+.container.dark .custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper):last-child {
+    border-right:1px solid #7a79b3;
+}
+.container.dark .custom-date-picker:global(.ant-picker) {
+    border:1px solid #7a79b3;
+}
+.container.dark .custom-date-picker:global(.ant-picker) :global(.anticon){
+    color:#7a79b3;
+}
+.container.dark .custom-date-picker:global(.ant-picker) :global(.ant-picker-input) > input {
+    color:#7a79b3;
+}
+/* 
+    自定义一组Radio组件样式
+*/
+.custom-radio-2:global(.ant-radio-group) > :global(.ant-radio-button-wrapper) {
+    height:28px;
+    line-height:28px;
+    padding:0 10px;
+    color: #fff !important;
+    background:#1545ff;
+    border:none;
+    border-top:1px solid #0e2b9a;
+    border-bottom:1px solid #0e2b9a;
+    border-left:1px solid #0e2b9a;
+}
+.custom-radio-2:global(.ant-radio-group) > :global(.ant-radio-button-wrapper):hover {
+    background:#335cfb;
+}
+.custom-radio-2:global(.ant-radio-group) > :global(.ant-radio-button-wrapper):first-child {
+    border-radius:4px 0 0 4px;
+}
+.custom-radio-2:global(.ant-radio-group) > :global(.ant-radio-button-wrapper):last-child {
+    border-right:1px solid #0e2b9a;
+    border-radius:0 4px 4px 0;
+}
+.custom-radio-2:global(.ant-radio-group) > :global(.ant-radio-button-wrapper):last-child::before {
+    display:none;
+}
+/* 
+    自定义Button组件样式
+*/
+.custom-button {
+    display:inline-block;
+    height: 32px;
+    line-height:32px;
+    font-size:1rem;
+    padding:0 14px;
+    margin-right:6px;
+    background-image:linear-gradient(to bottom, #06a0fe, #7646fe);
+    color:#fff;
+    border-radius:4px;
+    cursor:pointer;
+}
+.custom-button.small {
+    height:24px;
+    line-height: 24px;
+}
+.custom-button :global(.anticon){
+    margin-right:4px;
+}
+@media (max-width:1440px){
+    .custom-button {
+        height:24px;
+        line-height:24px;
+    }
+}
+/* 
+    自定义Select组件样式
+*/
+.custom-input:global(.ant-input-affix-wrapper) {
+    background-color:rgba(255,255,255,0.1);
+    width:200px;
+    margin-right:6px;
+    border:1px solid transparent;
+    color:#fff;
+}
+.custom-input:global(.ant-input-affix-wrapper) :global(.anticon){
+    color:rgba(255,255,255,0.5);
+}
+.custom-input:global(.ant-input-affix-wrapper) :global(.ant-input){
+    background-color:transparent;
+    color:#fff;
+}
+.custom-select:global(.ant-select){
+    height:32px !important;
+    line-height:32px;
+}
+.custom-select:global(.ant-select) :global(.ant-select-selector) {
+    height:32px !important;
+    border-radius:4px;
+    background-color:#15355b !important;
+    border:1px solid #03a4fe !important;
+    color:#fff;
+}
+.custom-select:global(.ant-select) :global(.ant-select-arrow) {
+    color:#fff;
+}
+@media (max-width:1440px){
+    .custom-select:global(.ant-select){
+        height:24px !important;
+        line-height:24px !important;
+    }
+    .custom-select:global(.ant-select) :global(.ant-select-selector) {
+        height:24px !important;
+    }
+    .custom-select:global(.ant-select) :global(.ant-select-selector) :global(.ant-select-selection-item){
+        line-height:24px !important;
+    }
+}
+/* .container.dark .custom-select:global(.ant-select) :global(.ant-select-selector) {
+    height:32px;
+    background-color:transparent;
+    border:1px solid #7a79b3;
+    color:#7a79b3;
+}
+.container.dark .custom-select:global(.ant-select) :global(.ant-select-arrow) {
+    color:#7a79b3;
+} */
+/* 
+    自定义Modal组件样式
+*/
+/* :global(.ant-modal-root) :global(.ant-modal-mask){
+    background-color:transparent;
+} */
+
+.custom-modal:global(.ant-modal) :global(.ant-modal-content) {
+    background-color:#193e6f;
+    color:#fff;
+    height:100%;
+}
+.custom-modal:global(.ant-modal) :global(.ant-modal-content) :global(.ant-modal-body) {
+    height:100%;
+}
+.custom-modal:global(.ant-modal) :global(.ant-modal-content) > :global(.ant-modal-header) {
+    background-color:#0693e5;
+    text-align: center;
+    border-bottom:none;
+    
+}
+.custom-modal:global(.ant-modal) :global(.ant-modal-content) > :global(.ant-modal-header) > :global(.ant-modal-title) {
+    color:#fff;
+    font-size:1.2rem;
+}
+
+.custom-modal:global(.ant-modal) :global(.ant-modal-content) :global(.ant-modal-close-x) {
+    color:#fff;
+}
+.custom-modal:global(.ant-modal) :global(.ant-modal-body) :global(.ant-form-item) :global(.ant-form-item-label) > label {
+    color:#fff;
+}
+/* 自定义切换button样式 */
+.button-group-container {
+    height:40px;
+    display:flex;
+    align-items: center;
+}
+
+.button-group-container .button-group-item {
+    color:#787887;
+    border-bottom:2px solid transparent;
+    margin:0 10px;
+    padding:6px 10px;
+    transition:all cubic-bezier(0.645, 0.045, 0.355, 1);
+    cursor: pointer;
+}
+
+.button-group-container .button-group-item:hover {
+    background-color:#303046;
+}
+
+.button-group-container .button-group-item.selected {
+    color:#fff;
+    border-bottom-color:#04a3fe
+}
+/* 
+    浮动全局日期控件样式
+*/
+.float-button-group {
+    position:absolute;
+    right:10px;
+    top:6px;
+    z-index:2;
+    display:flex;
+    align-items: center;
+}
+.float-button-group :global(.ant-radio-group) :global(.ant-radio-button-wrapper){
+
+}
+/* 
+    二级菜单组件样式
+*/
+
+/* .float-menu-container {
+    position:absolute;
+    left:1rem;
+    top:1rem;
+    height:calc( 40% - 2rem);
+    width:250px;
+    z-index:2;
+} */
+
+.float-menu-container :global(.ant-menu){
+    border-right:none;
+    background-color:#191932;
+    padding-top:10px;
+}
+
+.float-menu-container :global(.ant-menu-item){
+    color:#80808e;
+    font-size:1rem;
+}
+.float-menu-container :global(.ant-menu-item)::after{
+    left:0;
+    right:unset !important;
+}
+
+.float-menu-container :global(.ant-menu-item):global(.ant-menu-item-active), .float-menu-container :global(.ant-menu-item):global(.ant-menu-item-selected){
+    background-color:#303046 !important;
+    color:#1890ff;
+    font-weight:bold;
+}
+/* 
+    横向flex盒子样式 
+*/
+.flex-container {
+    height:100%;
+    display:flex;
+    align-items:center;
+    padding:0 1rem;
+    text-align: center;
+}
+
+.flex-container .flex-item {
+    flex:1;
+    white-space:nowrap;
+}
+
+.data {
+    font-size: 1.4rem;
+    color: #323238;
+    font-weight: bold;
+}
+.text {
+    font-size:1rem;
+    color: #323238;
+}
+.sub-text {
+    font-size:0.8rem;
+    
+}
+.data.down {
+    color:#6fcc17 !important;
+}
+.data.up {
+    color:#e83320 !important;
+}
+.container.dark .data {
+    color:#fff;
+}
+.container.dark .text {
+    color:#fff;
+}
+.container.dark .sub-text {
+    color:#fff;
+}
+
+/* 
+    自定义Form组件样式
+*/
+.container.dark :global(.ant-form) :global(.ant-form-item) :global(.ant-form-item-label) > label {
+    color:#fff;
+}
+.container.dark :global(.ant-form) :global(.ant-form-item) :global(.ant-radio-group) :global(.ant-radio-wrapper) {
+    color:#fff;
+}
+/* 
+    遮罩层样式
+*/
+.spin:global(.ant-spin) {
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+}
+
+.over-mask {
+    position: fixed;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
+    background-color:rgba(0,0,0,0.8);
+    z-index:100;
+}
+
+.container .select-container {
+    display:inline-flex;
+    align-items: center;
+    margin-right:20px;
+}
+.container.dark .select-container {
+    color:#fff;
+}
+
+
+.tag-on {
+    border-radius:4px;
+    background-color:rgba(94, 255, 90, 0.2);
+    border:1px solid #5eff5a;
+    color:#5eff5a;
+    padding:2px 10px;
+    white-space: nowrap;
+}
+
+.tag-off {
+    border-radius:4px;
+    background-color:rgba(255, 45, 46, 0.2);
+    border:1px solid #ff2d2e;
+    color:#ff2d2e;
+    padding:2px 10px;
+    white-space:nowrap;
+}
+
+
+/* 自定义Button组件样式 */
+.btn {
+    display:inline-block;
+    height:40px;
+    line-height:40px;
+    text-align: center;
+    background-color:#158afa;
+    color:#fff;
+    padding:0 2rem;
+    font-size:1rem;
+    font-weight:bold;
+    cursor: pointer;
+    margin-right:1rem;
+    transition:background-color 0.3s ease-out;
+}
+
+.btn.disabled {
+    color:#b3afaf;
+    background-color: #4c4c4c;
+    cursor: not-allowed;
+}
+.btn.opacity {
+    background-color:transparent;
+    border:1px solid #158afa;
+}
+.btn:hover {
+    background-color: #339bfd;
+}
+.btn :global(.anticon){
+    margin:0 4px;
+}
+.btn.small {
+    padding:0 6px;
+    height:24px;
+    line-height:24px;
+    font-size:0.8rem;
+    font-weight:normal;
+}
+@media (max-width:1440px){
+    .btn {
+        height:32px;
+        line-height: 32px;
+    }
+    .btn.small {
+        padding:0 4px;
+        height:18px;
+        line-height:18px;
+    }
+}

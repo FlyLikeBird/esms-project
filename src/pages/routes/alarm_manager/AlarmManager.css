@@ -1,0 +1,119 @@
+.list-container {
+    padding:1rem;
+    height:100%;
+}
+.list-container .list-item {
+    position:relative;
+    background-color:rgba(255,255,255,0.08);
+    margin-bottom:1rem;
+    display:flex;
+    height:60px;
+    line-height:60px;
+    color:rgba(255,255,255,0.5);
+    padding:0 1rem;
+    font-size:0.8rem;
+}
+.list-container .list-item > div {
+    padding:0 1rem;
+
+}
+.list-container .list-item > div.long-text {
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}
+
+.list-container .list-item .list-item-title {
+    display:flex;
+    justify-content: space-between;
+    margin-bottom:6px;
+}
+.list-container .list-item .list-item-content {
+    display:flex;
+    justify-content: space-between;
+}
+.list-container .list-item  .tag {
+    padding:4px 10px;
+    border-radius:4px;
+    color:#fff;
+    margin:0 10px;
+}
+
+/* 自定义Radio组件样式 */
+.custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper) {
+    background:rgba(255,255,255,0.1);
+    border:none;
+    color:rgba(255,255,255,0.4);
+    margin-right:10px;
+    height:28px;
+    line-height:28px;
+    padding:0 10px;
+    border-radius:4px;
+    font-size:0.8rem;
+}
+
+.custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper):hover {
+    background-color:#d9d9d9;
+    color:#000;
+}
+
+.custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper)::before {
+    display:none;
+}
+.custom-radio:global(.ant-radio-group) :global(.ant-radio-button-wrapper):global(.ant-radio-button-wrapper-checked) {
+    color: #fff !important;
+    background:#1545ff;
+}
+.custom-date-picker:global(.ant-picker) {
+    background:transparent;
+    border:1px solid #1545ff;
+    height:28px;
+}
+
+.container .custom-date-picker:global(.ant-picker) :global(.anticon){
+    color:rgba(0, 0, 0, 0.65);
+}
+.container .custom-date-picker:global(.ant-picker) :global(.ant-picker-input) > input {
+    color:rgba(0, 0, 0, 0.65);
+}
+/* 自定义Select组件样式 */
+.custom-input:global(.ant-input-affix-wrapper) {
+    background-color:rgba(255,255,255,0.1);
+    width:200px;
+    margin-right:6px;
+    border:1px solid transparent;
+    color:#fff;
+}
+.custom-input:global(.ant-input-affix-wrapper) :global(.anticon){
+    color:rgba(255,255,255,0.5);
+}
+.custom-input:global(.ant-input-affix-wrapper) :global(.ant-input){
+    background-color:transparent;
+    color:#fff;
+}
+.custom-select:global(.ant-select){
+    height:32px !important;
+    line-height:32px;
+}
+.custom-select:global(.ant-select) :global(.ant-select-selector) {
+    height:32px !important;
+    border-radius:4px;
+    background-color:transparent !important;
+    border:1px solid #6e6e7d !important;
+    color:rgba(255,255,255,0.4);
+}
+.custom-select:global(.ant-select) :global(.ant-select-arrow) {
+    color:rgba(255,255,255,0.4);
+}
+/* 自定义DatePicker组件样式 */
+.custom-date-picker:global(.ant-picker) {
+    height:32px;
+    background:transparent;
+    border:1px solid #6e6e7d !important;
+}
+.custom-date-picker:global(.ant-picker) :global(.anticon){
+    color:rgba(255,255,255,0.4);
+}
+.custom-date-picker:global(.ant-picker) :global(.ant-picker-input) > input {
+    color:#fff;
+}

@@ -1,0 +1,24 @@
+.field-container {
+    display:flex;
+    align-items:center;
+    flex-wrap: wrap;
+    background-color:#f7f7f7;
+    padding:20px;
+    margin:10px 0;
+}
+
+.field-container :global(.ant-form-item) {
+    margin-bottom:0;
+    margin:4px 0;
+    flex:1;
+    margin:0 10px;
+}
+
+.field-container :global(.ant-form-item-label) {
+    padding:0;
+}
+
+.field-container :global(.ant-form-item-explain) {
+    position:absolute;
+    top:100%;
+}

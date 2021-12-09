@@ -1,0 +1,114 @@
+/* // 内联盒子样式 */
+.inline-container {
+    height:100%;
+    padding:1rem;
+}
+
+.inline-container-header {
+    height:40px;
+    position:relative;
+    text-align: center;
+}
+.inline-container-main {
+    height:calc( 100% - 30px);
+    /* height:100%; */
+}
+.inline-container-footer {
+    height:40px;
+}
+.inline-container .inline-item-wrapper {
+    width:25%;
+    height:33.3%;
+    display:inline-block;
+    vertical-align: top;
+    padding:0 1rem 1rem 0;
+}
+
+.inline-container .inline-item-wrapper .inline-item {
+    height:100%;
+    position:relative;
+}
+
+.inline-container .inline-item-wrapper .inline-item .inline-item-title {
+    padding:0 10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height:32px;
+    line-height:32px;
+    background-image:linear-gradient(to right, #03a3fe, #3f72fe);
+    color:#fff;
+    padding:0 6px;
+}
+
+.inline-container .inline-item .tag {
+    padding:6px 10px;
+    color:#fff;
+    font-size:0.8rem;
+    line-height:0.8rem;
+}
+
+.inline-container .inline-item-wrapper .inline-item .inline-item-content {
+    height:calc( 100% - 32px);
+    background-color:#193d6f;
+    display:flex;
+    align-items: center;
+    position:relative;
+}
+.inline-container.dark .inline-item-wrapper .inline-item .inline-item-content {
+    background-color:#183d6d;
+}
+.inline-container .inline-item .text-container {
+    font-size:0.8rem;
+    color:rgba(255,255,255,0.6);
+    margin:10px 0;
+}
+.inline-container.dark .inline-item .text-container {
+    color:#fff;
+}
+.inline-container .inline-item .text {
+    margin-left:6px;
+    color:#fff;
+}
+
+/* 设备列表样式 */
+.mach-list-container {
+    padding:1rem;
+}
+
+.mach-list-container .mach-item {
+    display:inline-block;
+    vertical-align:top;
+    width:150px;
+    height:200px;
+    text-align:center;
+    background-color:#192546;
+    color:#fff;
+    padding:20px;
+    margin:0 14px 14px 0;
+    font-size:1rem;
+    transition:background-color 0.3s ease-in;
+    cursor: pointer;
+}
+.mach-list-container .mach-item:hover {
+    background-color:#27355a;
+}
+.mach-item .sub-text {
+    font-size:0.8rem;
+    color:#6f778b;
+}
+
+.spin:global(.ant-spin) {
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+}
+
+.empty-text {
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%, -50%);
+    text-align: center;
+}

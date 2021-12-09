@@ -1,0 +1,348 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Tag, Modal, Button, message } from 'antd';
+import style from './RemoteSwitch.css';
+import IndexStyle from '@/pages/routes/IndexPage.css';
+import { BarChartOutlined } from '@ant-design/icons';
+import SyncProgress from './SyncProgress';
+import ActionConfirm from '@/pages/components/ActionConfirm';
+import gatewayImg from '../../../../../public/gateway.png';
+import kkImg1P from '../../../../../public/kk_1p.png';
+import kkImg2P from '../../../../../public/kk_2p.png';
+import kkImg3P from '../../../../../public/kk_3p.png';
+import lbImg2P from '../../../../../public/lb_2p.png';
+import lbImg3P from '../../../../../public/lb_3p.png';
+import lbImg4P from '../../../../../public/lb_4p.png';
+
+let lbTypesMap = {
+    '2':lbImg2P,
+    '3':lbImg3P,
+    '4':lbImg4P
+};
+let kkTypesMap = {
+    '1':kkImg1P,
+    '2':kkImg2P,
+    '3':kkImg3P
+}
+// 0开闸 1合闸 2未知
+let posMap = {
+    '1':1,
+    '0':0,
+    '2':2
+};
+let statusMap = {
+    '0':'分断',
+    '1':'合闸',
+    '2':'未知'
+};
+let switchTypesMap = {
+    '0':'非物联网开关',
+    '1':'开关网关设备',
+    '2':'漏保',
+    '3':'开关',
+    '4':'空调'
+};
+function sortData(data){
+    let posArr = [], sum = 0; 
+    data.forEach((item,index)=>{
+        let temp = sum + ( item.switch_type === 2 ? 60 : 50 );
+        posArr.push(temp);
+        sum += ( item.switch_type === 2 ? 120 : 100 ) + 20;
+    });
+    return posArr;
+}
+let canDrag = false, 
+    currentTarget = null, 
+    prevIndex = 0,
+    currentIndex = 100, 
+    currentDom = null, 
+    hasInsert = false,
+    posX = 0, posY = 0, 
+    moveX = 0, moveY = 0;
+// 空开尺寸 100 * 240 漏保尺寸 120 * 240
+
+function SwitchList({ dispatch, data, currentSwitch, currentGateway, btnMaps, forSetting }){
+    const containerRef = useRef();
+    const posArr = useRef([]);
+    let [currentMach, setCurrentMach] = useState({});
+    let [visible, setVisible] = useState(false);
+    let [actionVisible, setActionVisible] = useState(false);
+    let [machList, setMachList] = useState([{ is_gateway:true, gateway_id:currentGateway.key },...data]);
+    useEffect(()=>{
+        setMachList([{ is_gateway:true, gateway_id:currentGateway.key }, ...data]);
+    },[data]);
+    useEffect(()=>{
+        posArr.current = sortData(data);
+    },[machList])
+   
+    useEffect(()=>{
+        let items = document.getElementsByClassName('draggable-item');         
+        function handleMouseDown(e){
+            canDrag = true;
+            posX = e.pageX;
+            posY = e.pageY;
+            currentTarget = e.currentTarget;
+            let doms = document.getElementsByClassName('draggable-item');
+            doms.forEach(item=>{
+                if ( item.attributes['data-index'].value === currentTarget.attributes['data-index'].value ){
+                    prevIndex = currentIndex = +item.attributes['data-index'].value;
+                }
+            })
+            // console.log(currentIndex);
+            // console.log(posX, posY);
+        }
+        function handleMouseUp(){
+            // console.log('mouseup');
+            if ( canDrag ){
+                if ( currentDom ){
+                    let items = document.getElementsByClassName('draggable-item');
+                    items.forEach(item=>{
+                        item.style.opacity = '1';
+                    })
+                    if ( containerRef.current && items[items.length - 1]){
+                        containerRef.current.removeChild(items[items.length - 1]);
+                    }
+                }
+                canDrag = false;
+                currentDom = null;
+                hasInsert = false;   
+                prevIndex = 0;
+                currentIndex = 0;
+                moveX = 0;
+                moveY = 0;        
+                // 删除绝对定位的临时div
+                currentTarget.style.opacity = '1';
+                currentTarget = null;
+            }                         
+        }
+
+        function handleMouseMove(e){
+            if ( canDrag ){
+                moveX = currentTarget.offsetLeft + e.pageX - posX;
+                moveY = currentTarget.offsetTop + e.pageY - posY;  
+                if ( !hasInsert ){
+                    let div = currentTarget.cloneNode(true);
+                    // div.className = 'draggable-item';
+                    div.style.position = 'absolute';
+                    // div.style.width = currentTarget.attributes['data-type'].value === 'lb' ? '120px' : '100px';
+                    currentDom = div;
+                    containerRef.current.appendChild(div);
+                    hasInsert = true;
+                    currentTarget.style.opacity = '0.2';
+                    // currentDom.addEventListener('mousemove', handleMouseMove);
+                    // currentDom.addEventListener('mouseup', handleMouseUp);
+                    // console.log(div);
+                }              
+                if ( currentDom ){
+                    currentDom.style.top = moveY + 'px';
+                    currentDom.style.left = moveX + 'px';
+                    // 判断浮动项当前的位置处于哪一个索引的位置  
+                    // console.log(posArr.current);              
+                    for( let i=0;i<posArr.current.length; i++){
+                        // 如果是第一项,左侧临界点
+                        if ( moveX < posArr.current[0] ) {
+                            currentIndex = 0;
+                        } else if ( moveX >= posArr.current[posArr.current.length - 1]  ){
+                            // 如果是最后一项，右侧临界点
+                            currentIndex = posArr.current.length - 1;
+                        } else {
+                            // 如果是中间项
+                            if ( moveX >= posArr.current[currentIndex + 1] ) {
+                                // console.log('+++++');
+                                currentIndex = currentIndex + 1;
+                            }
+                            if ( moveX < posArr.current[currentIndex - 1]) {
+                                // console.log('-----');
+                                currentIndex = currentIndex - 1;
+                            }
+                        }
+                        // console.log(currentIndex);
+                    }
+                    // 监听索引值的变化，有变化时才执行dom排序操作
+                    if ( prevIndex !== currentIndex ){
+                        // console.log('func()...');
+                        // console.log(prevIndex, currentIndex);
+                        currentTarget.style.opacity = '1';
+                        setMachList(data=>{
+                            let newArr = data.concat();
+                            let temp = newArr[prevIndex];
+                            newArr[prevIndex] = newArr[currentIndex];
+                            newArr[currentIndex] = temp;
+                            return newArr;
+                        })
+                        
+                    }
+                    prevIndex = currentIndex;
+                }
+            }
+        }
+        // items.forEach((item,index)=>{
+        //     item.addEventListener('mousedown', handleMouseDown);
+        // });
+        // window.addEventListener('mousemove', handleMouseMove);
+        // window.addEventListener('mouseup', handleMouseUp);
+        return ()=>{
+            // window.removeEventListener('mousemove', handleMouseMove);
+            // window.removeEventListener('mouseup', handleMouseUp);
+            // let items = document.getElementsByClassName('draggable-item');
+            // items.forEach(item=>{
+            //     item.removeEventListener('mousedown', handleMouseDown);
+            // })
+        }
+    },[]);
+    return (
+        machList && machList.length 
+        ?
+        <div style={{ height:'100%'}}>   
+            <div className={style['container']} ref={containerRef}>
+                {
+                    machList.map((item, index)=>(
+                        item.is_gateway 
+                        ?
+                        <div className={style['item-container']} key='gateway' style={{
+                            width:'69px',
+                            height:'100%',
+                            backgroundImage:`url(${gatewayImg})`,
+                            backgroundRepeat:'no-repeat',
+                            backgroundSize:'69px 100%'
+                        }}>
+                            {/* {
+                                syncGateways[currentGateway.key]
+                                ?
+                                <div className={style['float-item']} style={{ width:'100%', top:'50%', transform:'translate(-50%,-50%)'}}><SyncProgress dispatch={dispatch} syncGateways={syncGateways}  currentGateway={currentGateway} /></div>
+                                :
+                                null
+                            } */}
+                            <div className={style['float-item']} style={{ color: '#04a3fe', bottom:'6px'}}>
+                                <span>网关</span>
+                            </div>  
+                            {/* <div className={style['float-item']} style={{ bottom:'50px' }}><Button type='primary' size='small' onClick={()=>{
+                                if ( syncGateways[currentGateway.key] ) {
+                                    message.info('同步中...请稍后操作');
+                                    return;
+                                }
+                                new Promise((resolve, reject)=>{
+                                    dispatch({ type:'switchMach/sync', payload:{ mach_id:item.gateway_id, resolve, reject }})
+                                })
+                                .then(()=>{
+                                    message.success('同步过程需要约30秒，过程中无法操作设备');
+                                    let result = JSON.parse(localStorage.getItem('syncGateways'));
+                                    if ( result ){
+                                        result[item.gateway_id] = 1;
+                                        dispatch({ type:'switchMach/setSyncGateways', payload:result });
+                                    } else {
+                                        let temp = { [item.gateway_id]:1 };
+                                        dispatch({ type:'switchMach/setSyncGateways', payload:temp });                                       
+                                    }
+                                })
+                                .catch(msg=>message.info(msg))
+                            }}>刷新</Button></div> */}
+                        </div>
+                        :
+                        <div className={ ( forSetting ? currentSwitch.mach_id === item.mach_id ? style['item-container'] + ' ' + style['selected'] : style['item-container'] : style['item-container'] ) + ' '+ 'draggable-item'} key={index} data-index={index} data-type={item.switch_type === 2 ? 'lb' : 'kk'} onClick={()=>{
+                            // if ( syncGateways[currentGateway.key] ) {
+                            //     message.info('同步中...请稍后操作');
+                            //     return;
+                            // }
+                            if ( btnMaps['sw_ctrl_btn']) {
+                                if ( item.online_status !==1 ){
+                                    message.info('设备离线中');
+                                    return ;
+                                }
+                                if ( item.switch_status === 2 ){
+                                    message.info('设备状态未知，请勿操作');
+                                    return ;
+                                }
+                                setCurrentMach(item);
+                            } else {
+                                message.info('当前用户没有开合闸权限!');
+                            }
+                            
+                        }} style={{
+                            width:item.switch_type === 2 ? '120px' : '100px',
+                            height:'100%',
+                            cursor:'pointer',
+                            backgroundRepeat:'no-repeat',
+                            opacity: canDrag ? currentIndex === index ? '0.2' : '1' : '1',
+                            backgroundImage:`url(${ item.switch_type === 2 ? lbTypesMap[item.switch_p_num] : kkTypesMap[item.switch_p_num]})`, 
+                            // backgroundPosition:`-${ ( syncGateways[currentGateway.key] ? 2 : posMap[item.switch_status] ) * (item.switch_type === 2 ? 120 : 100 )}px 0`,
+                            backgroundSize:`${item.switch_type === 2 ? '360px' : '300px'} 100%`,
+                            backgroundPosition:`-${ posMap[item.switch_status]  * (item.switch_type === 2 ? 120 : 100 )}px 0`,
+                        }}>
+                                {/* <div className={style['float-item']} style={{ top:'10px', left:'unset', right:'0' }} onClick={(e)=>{
+                                    e.stopPropagation();
+                                    dispatch({ type:'terminalMach/fetchMachDetail', payload:{ mach_id:item.mach_id }});
+                                }}><BarChartOutlined style={{ fontSize:'1.2rem'}} /></div> */}
+                                <div className={style['float-item'] + ' ' + style['symbol']} style={{ top:'10px' }}>{ index }</div>
+                                {/* <div className={style['float-item']} style={{ top:'50px', fontSize:'0.8rem', color:item.online_status === 1 ? '#5eff5a' : '#ff2d2e' }}>
+                                    <span className={style['dot']} style={{ backgroundColor:item.online_status === 1 ? '#5eff5a' : '#ff2d2e' }}></span>
+                                    <span>{ item.online_status === 1 ? '在线' : '离线' }</span>
+                                </div> */}
+                                {/* <div className={`${style['float-item']} ${ item.switch_status === 1 ? IndexStyle['tag-on'] : IndexStyle['tag-off']}`} style={{ bottom:'50px'}}>
+                                    <span>{ statusMap[item.switch_status] }</span>
+                                </div> */}
+                                {/* <div className={style['float-item']} style={{ bottom:'50px' }}>
+                                    <span className={style['dot'] + ' ' + ( item.switch_status === 1 ? style['green'] : style['red'] )}></span>
+                                </div> */}
+                                <div className={ item.meter_name && item.meter_name.length >= 10 ? style['float-item'] + ' ' + style['auto-scroll'] : style['float-item']} style={{ color: item.switch_status === 0 || item.switch_status === 1 ? '#04a3fe' : '#fff', bottom:'6px'}}>
+                                    <span>{ item.meter_name }</span>
+                                </div>                            
+                        </div>
+                    ))
+                }
+            </div>
+            
+            <ActionConfirm visible={actionVisible} onClose={()=>setActionVisible(false)} onDispatch={()=>{
+                setCurrentMach({});
+                new Promise((resolve, reject)=>{
+                    dispatch({ type: currentMach.switch_status === 0 ? 'switchMach/fetchTurnOn' : 'switchMach/fetchTurnOff', payload:{ resolve, reject, mach_id:currentMach.mach_id }})
+                })
+                .then(()=>{
+                    message.success(`${currentMach.switch_status === 0 ? '合闸' : '分断'}成功`);
+                })
+                .catch(msg=>message.info(msg))
+            }} />
+            <Modal
+                width='400px'
+                height='260px'
+                className={IndexStyle['custom-modal']}
+                title='线路控制'
+                footer={null}
+                visible={Object.keys(currentMach).length}
+                onCancel={()=>setCurrentMach({})}
+            >
+                <div>
+                    <div style={{ margin:'10px 0', display:'flex', justifyContent:'space-between' }}>
+                        <span>线路名称:</span>
+                        <span>{ currentMach.meter_name }</span>
+                    </div>
+                    <div style={{ margin:'10px 0', display:'flex', justifyContent:'space-between' }}>
+                        <span>{`${switchTypesMap[currentMach.switch_type]}状态`}</span>
+                        <span className={ currentMach.switch_status === 1 ? style['tag-on'] : style['tag-off']} >
+                            <span>{ statusMap[currentMach.switch_status] }</span>
+                        </span>
+                    </div>
+                    <div style={{ textAlign:'center', margin:'20px 0' }}>
+                        <span style={{ display:'inline-block', verticalAlign:'top', fontWeight:'bold', cursor:'pointer', margin:'0 10px', width:'100px', height:'40px', lineHeight:'40px', backgroundColor: currentMach.switch_status === 0 ? 'rgb(24 173 20)' : '#ff2d2e' }} onClick={()=>{
+                            setActionVisible(true);
+                        }}>{ `${currentMach.switch_status === 0 ? '合闸' : '分断'}`}</span>
+                        <span style={{ display:'inline-block', verticalAlign:'top', fontWeight:'bold', cursor:'pointer', margin:'0 10px', width:'100px', height:'40px', lineHeight:'40px', color:'#fff', backgroundColor:'transparent', border:'2px solid #fff' }} onClick={()=>{
+                            setCurrentMach({});
+                        }}>取消</span>
+                    </div>
+                    
+                </div>
+            </Modal>
+        </div>
+        :
+        <div>该网关下没有配置任何空开设备</div>
+    )
+}
+
+function areEqual(prevProps, nextProps){
+    if ( prevProps.data !== nextProps.data || prevProps.currentSwitch !== nextProps.currentSwitch  ){
+        return false;
+    } else {
+        return true;
+    }
+}
+export default React.memo(SwitchList, areEqual);

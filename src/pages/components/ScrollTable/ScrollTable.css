@@ -1,0 +1,75 @@
+.container {
+    width:100%;
+    height:100%;
+    color:#fff;
+}
+
+.container .thead {
+    height:14%;
+    color:rgba(255,255,255,0.8);
+}
+
+.thead>div {
+    display:inline-block;
+    width:38%;
+    padding:2px 6px;
+    font-size:1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color:#fff;
+}
+
+.thead>div:nth-child(1){
+    width:24%;
+}
+
+.container .content-container {
+    height:86%;
+}
+
+.content-container .item {
+    height:20%;
+    display:flex;
+    align-items: center;
+    padding: 6px;
+    font-size:1rem;
+    white-space: nowrap;
+}
+
+.container .item:nth-child(even){
+    background-color:rgba(35,70,93,0.2);
+}
+
+.content-container .item>div {
+    width:38%;
+    padding:4px 0;
+    color:rgba(255,255,255,0.8);
+}
+.content-container .item>div.collapse {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.content-container .item>div:nth-child(1){
+    width:24%;
+}
+
+@media ( max-width:1440px){
+    .content-container .item > div {
+        transform:scale(0.9);
+        transform-origin:left;
+    }
+}
+
+.content-container .item.fill {
+    background-color:transparent;
+    opacity:0;
+}
+
+.content-container .item:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+.content-container .item:last-child {
+    border-bottom:none;
+}

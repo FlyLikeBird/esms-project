@@ -1,0 +1,135 @@
+.container {
+    width:100%;
+    height:100%;
+    white-space:nowrap;
+}
+
+.item-container {
+    height:100%;
+    position:relative;
+    margin-right:1rem;
+    display:inline-block;
+    vertical-align: top;
+    transform-origin:left;
+    background-repeat: no-repeat;
+    background-size:cover;
+    border-radius:4px;
+}
+.item-container:hover {
+    border:2px solid #04a3fe;
+}
+.item-container.selected {
+    border:2px solid #04a3fe;
+}
+
+.float-item {
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    white-space:nowrap;
+}
+
+/* 自动滚动设置 */
+.float-item.auto-scroll { 
+    position:absolute;
+    bottom:6px;
+    left:10px;
+    right:10px;
+    overflow: hidden;
+    transform: none;
+}
+.float-item.auto-scroll > span {
+    display:inline-block;
+    animation: move-init 8s linear, horizontal-move 14s linear 8s infinite;
+}
+@keyframes move-init {
+    0% {
+        transform:translate(0);
+    }
+    100% {
+        transform:translate(calc(-100px - 70%));
+    }
+}
+@keyframes horizontal-move {
+    0% {
+        transform: translate(100px);
+    }
+    100% {
+        /* 100%是自身的宽度 */
+        transform: translate(calc(-100px - 70%));
+    }
+}
+ 
+.symbol {
+    display:inline-block;
+    width:28px;
+    height:28px;
+    text-align: center;
+    line-height: 28px;
+    border-radius:50%;
+    background-color:#04a3fe;
+    color:#fff;
+    font-size:1.2rem;
+    font-weight:bold;
+}
+.dot {
+    display:inline-block;
+    width:6px;
+    height:6px;
+    margin:0 4px;
+    text-align: center;
+    line-height: 6px;
+    border-radius:50%;
+    background-color:#04a3fe;
+    color:#fff; 
+}
+.dot.green {
+    background-color:#5eff5a;
+    animation: greenFlash 3s ease-in-out infinite;
+}
+.dot.red {
+    background-color:#ff2d2e;
+    animation: redFlash 3s ease-in-out infinite;
+}
+
+@keyframes greenFlash {
+    0% {
+        background-color:#5eff5a;
+    }
+    50% {
+        transform:scale(1.4);
+        background-color:#32b830
+    }
+    100% {
+        transform:scale(1);
+        background-color:#5eff5a;
+    }
+}
+@keyframes redFlash {
+    0% {
+        background-color:#ff2d2e;
+    }
+    50% {
+        transform:scale(1.4);
+        background-color:#9b2727;
+    }
+    100% {
+        transform:scale(1);
+        background-color:#ff2d2e;
+    }
+}
+.horizon-line {
+    position:absolute;
+    height:1px;
+    background:#04a3fe;
+    left:100px;
+    top:15px;
+}
+
+.vertical-line {
+    position:absolute;
+    width:1px;
+    height:20px;
+    top:15px;
+    background:#04a3fe;
+}

@@ -1,0 +1,75 @@
+.container {
+    height:100%;
+    position:relative;
+    overflow: hidden;
+}
+
+.login-container {
+    position:absolute;
+    width:400px;
+    z-index:100;
+    display:flex;
+    flex-direction: column;
+    justify-content: space-around;
+    top:50%;
+    margin-top:-180px;
+    right:10%;
+    /* background:rgba(11, 50, 109, 0.5); */
+    /* background-color:rgba(18,142,214,0.7);
+    border:1px solid rgba(212,212,212,.2);  */
+    border-radius: 6px;
+    background-color:rgba(255,255,255,0.05);
+    padding:40px;
+    border:1px solid rgba(255,255,255,0.3);
+    box-shadow:0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05);
+}
+
+.login-container .title {
+    font-size: 1.6rem;
+    text-align: center;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.2rem;
+}
+
+.logo-container {
+    position:absolute;
+    left:4%;
+    top:8%;
+    display:flex;
+    align-items: center;
+    height:40px;
+    z-index:2;
+    /* border-bottom:1px solid rgb(10 45 70); */
+}
+
+.form-container {
+    /* border-top:1px solid #3c8cde; */
+    /* padding:40px; */
+    margin-top:40px;
+}
+
+.logo-container img {
+    height:100%;
+
+}
+
+.bg-container {
+    position:absolute;
+    left:0;
+    width:100%;
+    top:0;
+    height:100%;
+    background-repeat: no-repeat;
+    background-size:cover;
+}
+
+:global(.react-pdf__Document) {
+    background-color:#000;
+}
+
+:global(.react-pdf__Page) {
+    width:1000px;
+    margin:0 auto;
+    margin-bottom:1rem;
+}

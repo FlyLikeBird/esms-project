@@ -1,0 +1,85 @@
+.form-container {
+    /* width:70%;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%); */
+    width:80%;
+    margin:0 auto;
+}
+
+.form-container > :global(.ant-row) {
+    border-top:1px solid #2b2b53;
+    border-bottom:1px solid #0c0c19;
+    padding:1rem 0;
+}
+
+.form-container > :global(.ant-row):nth-child(1) {
+    border-top:none;
+}
+.form-container > :global(.ant-row):nth-child(2) {
+    border-top:none;
+}
+.form-container > :global(.ant-row):nth-child(3) {
+    border-top:none;
+}
+.form-container > :global(.ant-row):nth-child(4) {
+    border-top:none;
+}
+
+
+.form-container .my-form-item{
+    margin:0;
+    width:25%;
+}
+
+@media (max-width:1440px){
+    .form-container .my-form-item {
+        width:33.3%;
+    }
+    .form-container > :global(.ant-row):nth-child(4) {
+        border-top:1px solid #2b2b53;
+    }
+}
+/* Input组件样式 */
+.form-container :global(.ant-form-item) :global(.ant-input-wrapper){
+    background:rgba(255,255,255,0.1);
+}
+
+.form-container :global(.ant-form-item) :global(.ant-input-wrapper) :global(.ant-input) {
+    background:transparent;
+    border:none;
+    color:#fff;
+}
+
+.form-container :global(.ant-form-item) :global(.ant-input-wrapper) :global(.ant-input-affix-wrapper) {
+    background:transparent;
+    border:none;
+    color:#fff;
+}
+/* Checkbox组件样式 */
+.form-container :global(.ant-form-item) :global(.ant-checkbox-group) :global(.ant-checkbox-wrapper) {
+    color:#fff;
+}
+/* InputNumber组件样式 */
+.form-container :global(.ant-form-item) :global(.ant-input-number) {
+    background:rgba(255,255,255,0.1);
+    border:none;
+    color:#fff;
+}
+
+.form-container :global(.ant-form-item) :global(.ant-form-item-control-input) .tag {
+    color:#fff;
+    padding:0 1rem;
+}
+
+.form-container :global(.ant-form-item) :global(.ant-form-item-control-input) .tag :global(.anticon) {
+    margin:0 4px;
+}
+/* Radio组件样式 */
+.form-container :global(.ant-form-item) :global(.ant-radio-wrapper-disabled) > span {
+    color:#fff;
+}
+.form-container :global(.ant-form-item) :global(.ant-radio-checked):global(.ant-radio-disabled) :global(.ant-radio-inner)::after {
+    background-color:#1890ff !important;
+}
