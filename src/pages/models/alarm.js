@@ -1,4 +1,9 @@
-import { getAlarmAnalyze, getTodayAlarm, getAlarmHistory, getMachs, getRuleList, getRuleType, addRule, updateRule, deleteRule } from '../services/alarmService';
+import { 
+    getAlarmAnalyze, getTodayAlarm, 
+    getAlarmHistory,  getLogType, confirmRecord, getProgressLog, uploadImg,
+    getMachs, 
+    getRuleList, getRuleType, addRule, updateRule, deleteRule 
+} from '../services/alarmService';
 const initialState = {
     sumAlarm:{},
     todayAlarm:{},
@@ -7,6 +12,9 @@ const initialState = {
     currentPage:1,
     total:0,
     cateCode:'0',
+    logTypes:[],
+    progressLog:[],
+    historyLog:[],
     // 告警规则状态
     ruleList:[],
     ruleType:[],
@@ -68,7 +76,47 @@ export default {
         },
         *initAlarmHistory(action ,{ call, put }){
             yield put.resolve({ type:'switchMach/fetchGateway'});
-            yield put.resolve({ type:'fetchAlarmHistory' });
+            yield put({ type:'fetchAlarmHistory' });
+            yield put({ type:'fetchLogType'});
+        },
+        *fetchLogType(action, { put, call }){
+            let { data } = yield call(getLogType);
+            if ( data && data.code === '0'){
+                yield put({ type:'getLogType', payload:{ data:data.data }});
+            }
+        },
+        *fetchProgressInfo(action, { call, put}){
+            try {
+                let { data } = yield call(getProgressLog, { record_id:action.payload });
+                if ( data && data.code === '0' ){
+                    yield put({type:'getProgress', payload:{ data:data.data }});
+                }
+            } catch(err){
+                console.log(err);
+            }
+        },
+        *confirmRecord(action, { select, call, put, all }){
+            try {
+                let { user:{ company_id }} = yield select();
+                let { resolve, reject, values } = action.payload;
+                // photos字段是上传到upload接口返回的路径
+                let uploadPaths;
+                if ( values.photos && values.photos.length ) {
+                    let imagePaths = yield all([
+                        ...values.photos.map(file=>call(uploadImg, { file }))
+                    ]);
+                    uploadPaths = imagePaths.map(i=>i.data.data.filePath);
+                } 
+                let { data } = yield call(confirmRecord, { company_id, record_id:values.record_id, photos:uploadPaths, log_desc:values.log_desc, oper_code:values.oper_code, type_id:values.type_id });                 
+                if ( data && data.code === '0'){
+                    resolve();
+                    yield put({ type:'fetchAlarmHistory'});
+                } else {
+                    reject(data.msg);
+                }
+            } catch(err){
+                console.log(err);
+            }
         },
         *fetchAlarmHistory(action, { call, put, select }){
             try {
@@ -195,6 +243,12 @@ export default {
         },
         getHistory(state, { payload:{ data, pageNum }}){
             return { ...state, sourceData:data, currentPage:pageNum, isLoading:false };
+        },
+        getLogType(state, { payload:{ data }}){
+            return { ...state, logTypes:data };
+        },
+        getProgress(state, { payload :{ data }}){
+            return { ...state, progressLog:data };
         },
         getRule(state, { payload : { data }}){
             return { ...state, ruleList:data };

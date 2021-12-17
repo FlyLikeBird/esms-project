@@ -40,7 +40,7 @@ function TempFormContainer({ dispatch, switchMach }){
     },[tempInfo])
     return (
         <div style={{ height:'100%', position:'relative' }}>
-            <Form className={style['form-container']} form={form} {...formItemLayout} style={{ width:'30%' }}>
+            <Form className={style['form-container']} form={form}  style={{ width:'30%' }}>
                 <Row gutter={24}>
                     <Col span={20}>
                         <Form.Item label='温度下限' name='temp_limit_lower' rules={[{ required: true, message: '请输入合适的温度值' }]}>
@@ -62,7 +62,7 @@ function TempFormContainer({ dispatch, switchMach }){
                     </Col>
                 </Row>
             </Form>
-            <div style={{ position:'absolute', left:'50%', bottom:'4rem', transform:'translateX(-50%)' }}>
+            <div className={style['btn-group']}>
                 <div className={IndexStyle['btn']} onClick={()=>{
                     form.validateFields()
                     .then(values=>{

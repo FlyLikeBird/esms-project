@@ -17,8 +17,14 @@ function isFullscreen(){
 }
 
 function enterFullScreen(el){
-    let func = el.requestFullscreen || el.msRequestFullscreen || el.mozRequestFullscreen || el.webkitRequestFullscreen ;
-    if ( func && typeof func === 'function' ) func.call(el);
+    try {
+        if ( document.documentElement.requestFullscreen ) {
+            document.documentElement.requestFullscreen();
+        }
+    } catch(err){
+        console.log(err);
+    }
+    
 }
 
 function cancelFullScreen(el ){
@@ -32,7 +38,7 @@ function cancelFullScreen(el ){
 
 function Header({ dispatch, user }){
     const containerRef = useRef();
-    const { currentMenu, userMenu, msg, userInfo, currentCompany, thirdAgent, newThirdAgent } = user;
+    const { currentMenu, userMenu, msg, userInfo, currentCompany, thirdAgent } = user;
     useEffect(()=>{
         if ( containerRef.current ){
             dispatch({ type:'user/setContainerWidth', payload:containerRef.current.offsetWidth });
@@ -62,7 +68,7 @@ function Header({ dispatch, user }){
     return (
         <div ref={containerRef} className={style['container']}>
             <div style={{ display:'inline-flex', alignItems:'center' }}>
-                <img src={Object.keys(newThirdAgent).length ? newThirdAgent.logo_path : ''} style={{ height:'50%' }} />
+                <img src={Object.keys(thirdAgent).length ? thirdAgent.logo_path : ''} style={{ height:'50%' }} />
                 <span className={style['title']}>
                     智慧空开
                     {/* 电气火灾预防管理服务云平台 */}
@@ -96,7 +102,7 @@ function Header({ dispatch, user }){
                 <WeatherCom />
                 <div style={{ display:'inline-flex', alignItems:'center', marginRight:'6px' }}>
                     <div style={{ width:'24px', height:'24px', borderRadius:'50%', backgroundColor:'#8888ac', backgroundRepeat:'no-repeat', backgroundSize:'cover', backgroundImage:`url(${avatarBg})`}}></div>
-                    <div>{ currentCompany.company_name || '--' }</div>
+                    <div>{ userInfo.user_name }</div>
                     {/* <Tag color="blue">{ userInfo.role_name }</Tag> */}
                 </div>
                 <div style={{ cursor:'pointer', zIndex:'2' }} onClick={()=>{

@@ -17,6 +17,8 @@ function RegionBarChart({ data, containerWidth }){
     data.forEach(item=>{
         sumValue += item.cnt;
     });
+    console.log(data);
+    console.log(maxValue);
     let option = {
         tooltip:{
             trigger:'axis'

@@ -81,6 +81,45 @@ export function getRealtimeData(data = {}){
         }); 
 }
 
+export function getAutoLoadSwitch(data = {}){
+    let token = apiToken();
+    data.token = token;
+    let str = translateObj(data);
+    return request('/iotswitch/autoloadswtich', { 
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body:str
+        }); 
+}
+
+export function saveAutoLoadSwitch(data = {}){
+    let token = apiToken();
+    data.token = token;
+    let str = translateObj(data);
+    return request('/iotswitch/saveswitch', { 
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body:str
+        }); 
+}
+// 漏保自检
+export function selfCheck(data = {}){
+    let token = apiToken();
+    data.token = token;
+    let str = translateObj(data);
+    return request('/iotswitch/selfverify', { 
+        method:'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body:str
+        }); 
+}
+
 export function addTask(data = {}){
     let token = apiToken();
     data.token = token;

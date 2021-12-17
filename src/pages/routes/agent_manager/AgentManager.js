@@ -15,7 +15,7 @@ import switchImg from '../../../../public/switch.webp';
 
 function AgentManager({ dispatch, user, gateway }){
     let [dataType, setDataType] = useState('energy');
-    let { userInfo, companyList, msg, AMap } = user;
+    let { userInfo, companyList, msg, AMap, authorized } = user;
     let { monitorInfo } = gateway;
     let loaded = Object.keys(monitorInfo).length ? true : false; 
     let thead = [{ title:'位置', dataIndex:'region_name', width:'14%', collapse:true }, { title:'设备', dataIndex:'mach_name', width:'26%', collapse:true   }, { title:'分类', dataIndex:'type_name', width:'30%', border:true }, { title:'发生时间', dataIndex:'record_date', key:'time', width:'30%' }];
@@ -24,7 +24,7 @@ function AgentManager({ dispatch, user, gateway }){
         
         <div className={style['container']}>
             {
-                Object.keys(msg).length
+                authorized
                 ?
                 <AgentMap companyList={companyList} msg={msg} AMap={AMap} dispatch={dispatch} />
                 :

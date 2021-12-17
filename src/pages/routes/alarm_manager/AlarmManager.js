@@ -45,7 +45,7 @@ function AlarmManager({ dispatch, user, switchMach }){
                 </div>
             </div>
             {
-                subMenu === 'sw_warning_today' || subMenu === 'sw_warning_history'
+                subMenu.menu_code === 'sw_warning_today' || subMenu.menu_code === 'sw_warning_history'
                 ?
                 <div className={style['card-container']} style={{ padding:'0', height:'auto', boxShadow:'none' }}>
                     <div className={style['card-title']}>网关列表</div>
@@ -66,9 +66,9 @@ function AlarmManager({ dispatch, user, switchMach }){
                                 treeData={gatewayList}
                                 onSelect={(selectedKeys, {node})=>{ 
                                     dispatch({ type:'switchMach/toggleNode', payload:node }); 
-                                    if ( subMenu === 'sw_warning_today' ) {
+                                    if ( subMenu.menu_code === 'sw_warning_today' ) {
                                         dispatch({ type:'alarm/fetchTodayAlarm' });
-                                    } else if ( subMenu === 'sw_warning_history' ){                                       
+                                    } else if ( subMenu.menu_code === 'sw_warning_history' ){                                       
                                         dispatch({ type:'alarm/fetchAlarmHistory' });
                                     }                                                                                               
                                 }}

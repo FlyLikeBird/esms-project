@@ -47,7 +47,6 @@ export default {
             return { ...state, chartLoading:true };
         },
         getChartInfo(state, { payload:{ data }}){
-            console.log(data);
             return { ...state, chartInfo:data, chartLoading:false };
         },
         toggleOptionType(state, { payload }){

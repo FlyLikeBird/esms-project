@@ -9,9 +9,10 @@ import SwitchList from './SwitchList';
 import CombineSwitch from './CombineSwitch';
 let btnMaps = {};
 function RemoteSwitch({ dispatch, user, switchMach, terminalMach, menu }){
-    let { gatewayList, gatewayLoading, currentGateway, switchList, currentSwitch, realtimeData, switchLoading, switchData, switchDataLoading, optionType } = switchMach;
+    let { gatewayList, gatewayLoading, currentGateway, switchList, currentSwitch, realtimeData, switchLoading, switchData, switchDataLoading, detailLoading, switchDetail, optionType, autoLoading, autoLoadSwitchList } = switchMach;
     let { machLoading, machDetailInfo } = terminalMach;
     let [visible, setVisible] = useState(false);
+    let [detailInfo, setDetailInfo] = useState({});
     useEffect(()=>{
         if ( user.authorized ){
             dispatch({ type:'switchMach/init' });
@@ -28,88 +29,165 @@ function RemoteSwitch({ dispatch, user, switchMach, terminalMach, menu }){
             btnMaps[item.menu_code] = true;
         })
     }
+    let finalSwitchList = autoLoading ? autoLoadSwitchList : switchList;
     return (
         <div>
-            <div className={style['card-container-wrapper']} style={{ display:'block', height:'40%', paddingRight:'0' }}>
+            <div className={style['card-container-wrapper']} style={{ display:'block', height:'42%', paddingRight:'0' }}>
                 <div className={style['card-container']} style={{ overflow:'auto' }}>
-                    <div className={style['card-title']}>
-                        <div>{`在线控制-${currentGateway.title}`}</div>
-                        <div>
+                    {
+                        switchLoading
+                        ?
+                        null
+                        :
+                        <div className={style['card-title']}>
+                            <div>{`在线控制-${currentGateway.title || ''}`}</div>
                             {
-                                btnMaps['sw_ctrl_refresh']
+                                autoLoading 
                                 ?
-                                <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
-                                    dispatch({ type:'switchMach/refresh'});
-                                }}><ReloadOutlined style={{ fontSize:'1.2rem' }} />刷新</div>
+                                <div>
+                                    <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
+                                        new Promise((resolve, reject)=>{
+                                            dispatch({ type:'switchMach/fetchAutoLoad', payload:{ resolve, reject }});
+                                        })
+                                        .then(()=>{ message.success('读取档案成功')})
+                                        .catch(msg=>message.error(msg))
+                                    }}><ControlOutlined style={{ fontSize:'1.2rem' }}/>读取档案</div>
+                                    <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
+                                        if ( finalSwitchList && finalSwitchList.length ){
+                                            message.info('存档中，请稍后...');
+                                            new Promise((resolve, reject)=>{
+                                                dispatch({ type:'switchMach/saveAutoLoad', payload:{ resolve, reject, machInfoList:finalSwitchList }});
+                                            })
+                                            .then(()=>{
+                                                message.success('存档成功,请稍后刷新', 5);
+                                                dispatch({ type:'switchMach/toggleAutoLoading', payload:false });
+                                            })
+                                            .catch(msg=>message.error(msg));
+                                        } else {
+                                            message.info('读取设备档案为空，无需存档');
+                                        }
+                                        
+                                    }}>存档</div>
+                                    <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
+                                        dispatch({ type:'switchMach/toggleAutoLoading', payload:false });
+                                    }}>取消</div>
+                                </div>
                                 :
-                                null
+                                <div>
+                                    {
+                                        currentGateway.key
+                                        ?
+                                        btnMaps['sw_ctrl_refresh']
+                                        ?
+                                        <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
+                                            dispatch({ type:'switchMach/refresh'});
+                                        }}><ReloadOutlined style={{ fontSize:'1.2rem' }} />刷新</div>
+                                        :
+                                        null
+                                        :
+                                        null
+                                    }
+                                    {
+                                        currentGateway.key 
+                                        ?
+                                        btnMaps['sw_ctrl_refresh']
+                                        ?
+                                        <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
+                                            new Promise((resolve, reject)=>{
+                                                message.info('同步中，无法操作设备，请稍后...');
+                                                dispatch({ type:'switchMach/sync', payload:{ resolve, reject }})
+                                            })
+                                            .then(()=>{
+                                                message.success('同步成功');
+                                            })
+                                            .catch(msg=>message.error(msg))
+                                        }}><CloudSyncOutlined style={{ fontSize:'1.2rem' }}/>同步</div>
+                                        :
+                                        null
+                                        :
+                                        null
+                                    }
+                                    {
+                                        currentGateway.key 
+                                        ?
+                                        <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
+                                            new Promise((resolve, reject)=>{
+                                                dispatch({ type:'switchMach/fetchAutoLoad', payload:{ resolve, reject }});
+                                            })
+                                            .then(()=>{ message.success('读取档案成功')})
+                                            .catch(msg=>message.error(msg))
+    
+                                        }}><ControlOutlined style={{ fontSize:'1.2rem' }}/>读取档案</div>
+                                        :
+                                        null
+                                    }
+                                   
+                                    {
+                                        currentGateway.key 
+                                        ?
+                                        btnMaps['sw_ctrl_btn'] 
+                                        ?
+                                        <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
+                                            setVisible(true);
+                                        }}><ControlOutlined style={{ fontSize:'1.2rem' }}/>空开批量控制</div>
+                                        :
+                                        null
+                                        :
+                                        null
+                                    }                           
+                                </div>
                             }
-                            {
-                                btnMaps['sw_ctrl_refresh']
-                                ?
-                                <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
-                                    new Promise((resolve, reject)=>{
-                                        dispatch({ type:'switchMach/sync', payload:{ resolve, reject }})
-                                    })
-                                    .then(()=>{
-                                        message.success('同步过程需要约30秒，过程中无法操作设备');
-                                    })
-                                    .catch(msg=>message.info(msg))
-                                }}><CloudSyncOutlined style={{ fontSize:'1.2rem' }}/>同步</div>
-                                :
-                                null
-                            }
-                            <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
-                            }}><ControlOutlined style={{ fontSize:'1.2rem' }}/>自动读取</div>
-                            {/* <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
-                                dispatch({ type:'setAuto'})
-                            }}><ControlOutlined style={{ fontSize:'1.2rem' }}/>自动读取</div> */}
-                            {
-                                btnMaps['sw_ctrl_btn'] 
-                                ?
-                                <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
-                                    setVisible(true);
-                                }}><ControlOutlined style={{ fontSize:'1.2rem' }}/>空开批量控制</div>
-                                :
-                                null
-                            }                           
+                            
                         </div>
-                    </div>
+                    }           
                     <div className={style['card-content']}>
                         {
                             switchLoading 
                             ?
                             <Skeleton active className={style['skeleton']} />
                             :
-                            <SwitchList data={switchList} dispatch={dispatch} currentSwitch={{}} currentGateway={currentGateway} btnMaps={btnMaps}  />
+                            currentGateway.key 
+                            ?
+                            <SwitchList
+                                data={finalSwitchList} 
+                                dispatch={dispatch} 
+                                currentSwitch={currentSwitch} 
+                                currentGateway={currentGateway} 
+                                btnMaps={btnMaps}  
+                                onSelectDetail={item=>setDetailInfo(item)}
+                            />
+                            :
+                            <div className={style['empty-text']}>还没有配置网关</div>
                         }
                     </div>
                 </div>
             </div>
-            <div className={style['card-container-wrapper']} style={{ display:'block' ,height:'60%', paddingRight:'0', paddingBottom:'0' }}>
-                <div className={style['card-container']}>   
-                                  
+            <div className={style['card-container-wrapper']} style={{ display:'block' ,height:'58%', paddingRight:'0', paddingBottom:'0' }}>
+                <div className={style['card-container']}>                                  
                     <TableContainer dispatch={dispatch} data={switchData} loading={switchDataLoading} realtimeData={realtimeData} optionType={optionType} />                 
                 </div>
             </div>
+            {/* 空开详情 */}
             <Modal 
-               visible={Object.keys(machDetailInfo).length ? true : false}
+               visible={Object.keys(detailInfo).length ? true : false}
                footer={null}
                className={style['custom-modal']}
+               destroyOnClose={true}
                bodyStyle={{ backgroundColor:'rgba(0, 0, 0, 0.8)' }}
-               width='80vw'
-               height='80vh'
+               width='80%'
+               height='80%'
                onCancel={()=>{
-                   dispatch({ type:'terminalMach/resetMachDetail'})
+                   setDetailInfo({})
                }}
             >
                 <MachDetail 
                     dispatch={dispatch}
-                 //    currentMach={currentMach}
-                    machLoading={machLoading}
-                    data={machDetailInfo}
+                    machLoading={detailLoading}
+                    data={switchDetail}
+                    currentDetail={detailInfo}
                 />
             </Modal>
+            {/* 批量控制空开 */}
             <Modal
                 width='600px'
                 className={style['custom-modal']}

@@ -35,7 +35,8 @@ function TableContainer({ dispatch, data, loading, currentPage, total }){
         //         return <span className={style['tag-on']}>{ actionsMap[value] }</span>
         //     }
         // },
-        { title:'动作名称', dataIndex:'action_name'},
+        { title:'操作人', dataIndex:'action_user_name' },
+        { title:'操作详情', dataIndex:'action_name'},
         { 
             title:'执行结果', 
             dataIndex:'action_res',

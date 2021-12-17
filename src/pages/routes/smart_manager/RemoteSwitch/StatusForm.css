@@ -41,45 +41,11 @@
         border-top:1px solid #2b2b53;
     }
 }
-/* Input组件样式 */
-.form-container :global(.ant-form-item) :global(.ant-input-wrapper){
-    background:rgba(255,255,255,0.1);
+/* Switch组件 */
+.form-container .custom-switch {
+    background-color:#585867;
+    opacity: 1;
 }
-
-.form-container :global(.ant-form-item) :global(.ant-input-wrapper) :global(.ant-input) {
-    background:transparent;
-    border:none;
-    color:#fff;
-}
-
-.form-container :global(.ant-form-item) :global(.ant-input-wrapper) :global(.ant-input-affix-wrapper) {
-    background:transparent;
-    border:none;
-    color:#fff;
-}
-/* Checkbox组件样式 */
-.form-container :global(.ant-form-item) :global(.ant-checkbox-group) :global(.ant-checkbox-wrapper) {
-    color:#fff;
-}
-/* InputNumber组件样式 */
-.form-container :global(.ant-form-item) :global(.ant-input-number) {
-    background:rgba(255,255,255,0.1);
-    border:none;
-    color:#fff;
-}
-
-.form-container :global(.ant-form-item) :global(.ant-form-item-control-input) .tag {
-    color:#fff;
-    padding:0 1rem;
-}
-
-.form-container :global(.ant-form-item) :global(.ant-form-item-control-input) .tag :global(.anticon) {
-    margin:0 4px;
-}
-/* Radio组件样式 */
-.form-container :global(.ant-form-item) :global(.ant-radio-wrapper-disabled) > span {
-    color:#fff;
-}
-.form-container :global(.ant-form-item) :global(.ant-radio-checked):global(.ant-radio-disabled) :global(.ant-radio-inner)::after {
-    background-color:#1890ff !important;
+.form-container .custom-switch:global(.ant-switch-checked) {
+    background-color:#1890ff;
 }

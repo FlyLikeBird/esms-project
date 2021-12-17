@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
-import { Tree, Spin, Menu, message } from 'antd';
+import { history } from 'umi';
+import { Tree, Spin, Menu, Button, message } from 'antd';
 import style from '@/pages/routes/IndexPage.css';
 import ColumnCollapse from '@/pages/components/ColumnCollapse';
 import RemoteSwitch from './RemoteSwitch';
@@ -51,13 +52,26 @@ function SmartManager({ dispatch, user, switchMach }){
                 subMenu.menu_code === 'sw_ctrl_remote' || subMenu.menu_code === 'sw_ctrl_trip'
                 ?
                 <div className={style['card-container'] + ' ' + style['bottomRadius']} style={{ padding:'0', height:'auto', boxShadow:'none' }}>
-                    <div className={style['card-title']}>网关列表</div>
+                    <div className={style['card-title']}>
+                        <div>网关列表</div>
+                        {
+                            subMenu.menu_code === 'sw_ctrl_remote' 
+                            ?
+                            <Button type='primary' size='small' style={{ fontSize:'0.8rem' }} onClick={()=>{
+                                history.push('/sw_system');
+                            }}>添加网关</Button>
+                            :
+                            null
+                        }
+                    </div>
                     <div className={style['card-content']}>
                         {
                             gatewayLoading
                             ?
                             <Spin className={style['spin']} />
                             :
+                            gatewayList.length 
+                            ?
                             <Tree
                                 className={style['custom-tree']}
                                 defaultExpandAll={true}
@@ -119,6 +133,8 @@ function SmartManager({ dispatch, user, switchMach }){
                                     }                   
                                 }}
                             />
+                            :
+                            <div>网关列表为空</div>
                         }
                     </div>
                 </div>

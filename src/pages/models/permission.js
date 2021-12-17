@@ -20,10 +20,9 @@ export default {
             yield put({ type:'reset'});
         },
         *fetchRoleList(action, { put, call, select }){
-            let { user:{ userInfo }} = yield select();
             let { data } = yield call(getRoleList);
             if ( data && data.code === '0'){
-                yield put({ type:'getRoleListResult', payload:{ data:data.data, role_type:userInfo.role_type }});
+                yield put({ type:'getRoleListResult', payload:{ data:data.data }});
             }
         },
         *fetchUserPermission(action, { put, call, select }){
@@ -53,9 +52,8 @@ export default {
         toggleGatewayLoading(state){
             return { ...state, gatewayLoading:true };
         },
-        getRoleListResult(state, { payload:{ data, role_type }}){
+        getRoleListResult(state, { payload:{ data }}){
             let { roles } = data;
-            roles = roles.filter(i=>i.role_type > role_type );
             return { ...state, roleList:roles };
         },
         getUserPermissionResult(state, { payload:{ data }}){

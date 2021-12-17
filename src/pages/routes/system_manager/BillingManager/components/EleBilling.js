@@ -140,12 +140,12 @@ function EleBilling({ dispatch, user, billing }){
                 </div>
                 {/* <BillingTable dispatch={dispatch} rateInfo={rateInfo} /> */}
                 <Table
+                    rowKey="quarter_id"
                     className={style['self-table-container'] + ' ' + style['dark'] + ' ' + style['no-space']}
                     columns={columns}
                     dataSource={list}
                     bordered={true}
                     pagination={false}
-                    rowKey="quarter_id"
                     locale={{emptyText:'还没有配置计费方案'}}
 
                 />

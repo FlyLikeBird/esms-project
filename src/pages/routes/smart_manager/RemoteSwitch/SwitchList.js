@@ -1,23 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Tag, Modal, Button, message } from 'antd';
+import { Tag, Modal, Button, Tooltip, Spin, message } from 'antd';
+import moment from 'moment';
 import style from './RemoteSwitch.css';
 import IndexStyle from '@/pages/routes/IndexPage.css';
-import { BarChartOutlined } from '@ant-design/icons';
+import { BarChartOutlined, SettingOutlined } from '@ant-design/icons';
 import SyncProgress from './SyncProgress';
 import ActionConfirm from '@/pages/components/ActionConfirm';
 import gatewayImg from '../../../../../public/gateway.png';
 import kkImg1P from '../../../../../public/kk_1p.png';
 import kkImg2P from '../../../../../public/kk_2p.png';
 import kkImg3P from '../../../../../public/kk_3p.png';
-import lbImg2P from '../../../../../public/lb_2p.png';
-import lbImg3P from '../../../../../public/lb_3p.png';
-import lbImg4P from '../../../../../public/lb_4p.png';
 
-let lbTypesMap = {
-    '2':lbImg2P,
-    '3':lbImg3P,
-    '4':lbImg4P
-};
 let kkTypesMap = {
     '1':kkImg1P,
     '2':kkImg2P,
@@ -25,8 +18,8 @@ let kkTypesMap = {
 }
 // 0开闸 1合闸 2未知
 let posMap = {
-    '1':1,
-    '0':0,
+    '0':1,
+    '1':0,
     '2':2
 };
 let statusMap = {
@@ -60,13 +53,14 @@ let canDrag = false,
     moveX = 0, moveY = 0;
 // 空开尺寸 100 * 240 漏保尺寸 120 * 240
 
-function SwitchList({ dispatch, data, currentSwitch, currentGateway, btnMaps, forSetting }){
+function SwitchList({ dispatch, data, currentSwitch, currentGateway, btnMaps, onSelectDetail, forSetting }){
     const containerRef = useRef();
     const posArr = useRef([]);
     let [currentMach, setCurrentMach] = useState({});
     let [visible, setVisible] = useState(false);
     let [actionVisible, setActionVisible] = useState(false);
     let [machList, setMachList] = useState([{ is_gateway:true, gateway_id:currentGateway.key },...data]);
+    let [checkLoading, setCheckLoading] = useState(false);
     useEffect(()=>{
         setMachList([{ is_gateway:true, gateway_id:currentGateway.key }, ...data]);
     },[data]);
@@ -203,7 +197,8 @@ function SwitchList({ dispatch, data, currentSwitch, currentGateway, btnMaps, fo
                             height:'100%',
                             backgroundImage:`url(${gatewayImg})`,
                             backgroundRepeat:'no-repeat',
-                            backgroundSize:'69px 100%'
+                            backgroundSize:'138px 100%',
+                            // backgroundPosition:`-${currentGateway.is_online === 1 ? 0 : 69 }px 0`
                         }}>
                             {/* {
                                 syncGateways[currentGateway.key]
@@ -214,6 +209,10 @@ function SwitchList({ dispatch, data, currentSwitch, currentGateway, btnMaps, fo
                             } */}
                             <div className={style['float-item']} style={{ color: '#04a3fe', bottom:'6px'}}>
                                 <span>网关</span>
+                            </div>
+                            <div className={style['float-item']} style={{ bottom:'38px' }}>
+                                {/* <span className={style['dot'] + ' ' + ( currentGateway.is_online === 1 ? style['green'] : style['red'] )}></span> */}
+                                <span style={{ color:currentGateway.is_online === 1 ? '#5eff5a' : '#ff2d2e' }}>{ currentGateway.is_online === 1 ? '在线' : '离线' }</span>
                             </div>  
                             {/* <div className={style['float-item']} style={{ bottom:'50px' }}><Button type='primary' size='small' onClick={()=>{
                                 if ( syncGateways[currentGateway.key] ) {
@@ -238,35 +237,41 @@ function SwitchList({ dispatch, data, currentSwitch, currentGateway, btnMaps, fo
                             }}>刷新</Button></div> */}
                         </div>
                         :
-                        <div className={ ( forSetting ? currentSwitch.mach_id === item.mach_id ? style['item-container'] + ' ' + style['selected'] : style['item-container'] : style['item-container'] ) + ' '+ 'draggable-item'} key={index} data-index={index} data-type={item.switch_type === 2 ? 'lb' : 'kk'} onClick={()=>{
-                            // if ( syncGateways[currentGateway.key] ) {
-                            //     message.info('同步中...请稍后操作');
-                            //     return;
-                            // }
-                            if ( btnMaps['sw_ctrl_btn']) {
-                                if ( item.online_status !==1 ){
-                                    message.info('设备离线中');
-                                    return ;
+                        <div className={ ( forSetting ? currentSwitch.mach_id === item.mach_id ? style['item-container'] + ' ' + style['selected'] : style['item-container'] : style['item-container'] ) + ' '+ 'draggable-item'} key={index} data-index={index} data-type='kk' onClick={()=>{
+                            if ( checkLoading ){
+                                message.info('设备自检中,请稍后...');
+                                return ;
+                            }
+                            if ( item.mach_id ){
+                                if ( btnMaps['sw_ctrl_btn']) {
+                                    if ( item.online_status !==1 ){
+                                        message.info('设备离线中');
+                                        return ;
+                                    }
+                                    if ( item.switch_status === 2 ){
+                                        message.info('设备状态未知，请勿操作');
+                                        return ;
+                                    }
+                                    setCurrentMach(item);
+                                } else {
+                                    message.info('当前用户没有开合闸权限!');
                                 }
-                                if ( item.switch_status === 2 ){
-                                    message.info('设备状态未知，请勿操作');
-                                    return ;
-                                }
-                                setCurrentMach(item);
                             } else {
-                                message.info('当前用户没有开合闸权限!');
+                                message.info('请先存档');
                             }
                             
+                            
                         }} style={{
-                            width:item.switch_type === 2 ? '120px' : '100px',
+                            width:'100px',
                             height:'100%',
                             cursor:'pointer',
                             backgroundRepeat:'no-repeat',
-                            opacity: canDrag ? currentIndex === index ? '0.2' : '1' : '1',
-                            backgroundImage:`url(${ item.switch_type === 2 ? lbTypesMap[item.switch_p_num] : kkTypesMap[item.switch_p_num]})`, 
+                            // opacity: canDrag ? currentIndex === index ? '0.2' : '1' : '1',
+                            opacity:item.mach_id ? '1' : '0.4',
+                            backgroundImage:`url(${kkTypesMap[item.switch_p_num]})`, 
                             // backgroundPosition:`-${ ( syncGateways[currentGateway.key] ? 2 : posMap[item.switch_status] ) * (item.switch_type === 2 ? 120 : 100 )}px 0`,
-                            backgroundSize:`${item.switch_type === 2 ? '360px' : '300px'} 100%`,
-                            backgroundPosition:`-${ posMap[item.switch_status]  * (item.switch_type === 2 ? 120 : 100 )}px 0`,
+                            backgroundSize:'300px 100%',
+                            backgroundPosition:`-${ posMap[item.switch_status]  * 100}px 0`,
                         }}>
                                 {/* <div className={style['float-item']} style={{ top:'10px', left:'unset', right:'0' }} onClick={(e)=>{
                                     e.stopPropagation();
@@ -276,14 +281,57 @@ function SwitchList({ dispatch, data, currentSwitch, currentGateway, btnMaps, fo
                                 {/* <div className={style['float-item']} style={{ top:'50px', fontSize:'0.8rem', color:item.online_status === 1 ? '#5eff5a' : '#ff2d2e' }}>
                                     <span className={style['dot']} style={{ backgroundColor:item.online_status === 1 ? '#5eff5a' : '#ff2d2e' }}></span>
                                     <span>{ item.online_status === 1 ? '在线' : '离线' }</span>
-                                </div> */}
-                                {/* <div className={`${style['float-item']} ${ item.switch_status === 1 ? IndexStyle['tag-on'] : IndexStyle['tag-off']}`} style={{ bottom:'50px'}}>
+                                </div>
+                                <div className={`${style['float-item']} ${ item.switch_status === 1 ? IndexStyle['tag-on'] : IndexStyle['tag-off']}`} style={{ bottom:'50px'}}>
                                     <span>{ statusMap[item.switch_status] }</span>
-                                </div> */}
-                                {/* <div className={style['float-item']} style={{ bottom:'50px' }}>
+                                </div>
+                                <div className={style['float-item']} style={{ bottom:'50px' }}>
                                     <span className={style['dot'] + ' ' + ( item.switch_status === 1 ? style['green'] : style['red'] )}></span>
                                 </div> */}
-                                <div className={ item.meter_name && item.meter_name.length >= 10 ? style['float-item'] + ' ' + style['auto-scroll'] : style['float-item']} style={{ color: item.switch_status === 0 || item.switch_status === 1 ? '#04a3fe' : '#fff', bottom:'6px'}}>
+                               
+                                {
+                                    item.switch_type === 2 
+                                    ?
+                                    <div className={ style['float-item']} style={{ color:'#03a6fe', fontSize:'0.8rem', top:'50px' }}>
+                                        {
+                                            checkLoading
+                                    
+                                            ?
+                                            <span><Spin size='small' /></span>
+                                            :
+                                            <span onClick={(e)=>{
+                                                e.stopPropagation();
+                                                setCheckLoading(true);
+                                                new Promise((resolve, reject)=>{
+                                                    dispatch({ type:'switchMach/fetchSelfCheck', payload:{ resolve, reject, mach_id:item.mach_id }});
+                                                })
+                                                .then(()=>{
+                                                    message.success(`${item.meter_name}自检成功`);
+                                                    setCheckLoading(false);
+                                                })
+                                                .catch(msg=>{
+                                                    message.error(msg);
+                                                    setCheckLoading(false);
+                                                });
+                                                
+                                            }}>自检</span>
+                                        }
+                                    </div>
+                                    :
+                                    null
+                                }
+                                {
+                                    item.mach_id 
+                                    ?
+                                    <div className={ style['float-item'] + ' ' + ( item.switch_status === 2 ? style['ghost-btn-white'] : style['ghost-btn-blue'] ) } style={{ bottom:'36px' }} onClick={e=>{
+                                        e.stopPropagation();
+                                        onSelectDetail(item);
+                                        
+                                    }}>查看</div>
+                                    :
+                                    null
+                                }                              
+                                <div className={ item.meter_name && item.meter_name.length >= 12 ? style['float-item'] + ' ' + style['auto-scroll'] : style['float-item']} style={{ color: item.switch_status === 0 || item.switch_status === 1 ? '#04a3fe' : '#fff', bottom:'6px'}}>
                                     <span>{ item.meter_name }</span>
                                 </div>                            
                         </div>
@@ -301,6 +349,7 @@ function SwitchList({ dispatch, data, currentSwitch, currentGateway, btnMaps, fo
                 })
                 .catch(msg=>message.info(msg))
             }} />
+            {/* 空开开合闸控制 */}
             <Modal
                 width='400px'
                 height='260px'
@@ -332,9 +381,10 @@ function SwitchList({ dispatch, data, currentSwitch, currentGateway, btnMaps, fo
                     
                 </div>
             </Modal>
+            
         </div>
         :
-        <div>该网关下没有配置任何空开设备</div>
+        null
     )
 }
 

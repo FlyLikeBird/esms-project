@@ -27,11 +27,14 @@ const infoStyle = {
     fontSize:'0.8rem',
     color:'#fff'
 }
-function MachDetail({ dispatch, machLoading, data }){
+function MachDetail({ dispatch, machLoading, data, currentDetail }){
     const [referDate, setReferDate] = useState(moment(new Date()));
     const inputRef = useRef();
     useEffect(()=>{
-        
+        dispatch({ type:'switchMach/fetchSwitchDetail', payload:{ mach_id:currentDetail.mach_id, referDate }});
+        return ()=>{
+            dispatch({ type:'switchMach/resetDetail'});
+        }
     },[]);
     return (
             <div className={style['inline-container']}>
@@ -42,18 +45,18 @@ function MachDetail({ dispatch, machLoading, data }){
                                 <div className={style['date-picker-button-left']} onClick={()=>{
                                     let temp = new Date(referDate.format('YYYY-MM-DD'));
                                     let result = moment(temp).subtract(1,'days');
-                                    dispatch({ type:'terminalMach/fetchMachDetail', payload:{ referDate:result, mach_id:data.mach.mach_id }});
+                                    dispatch({ type:'switchMach/fetchSwitchDetail', payload:{ referDate:result, mach_id:currentDetail.mach_id }});
                                     setReferDate(result);
                                 }}><LeftOutlined /></div>
                                 <DatePicker size='small' ref={inputRef} locale={zhCN} allowClear={false} value={referDate} onChange={value=>{
-                                    dispatch({ type:'terminalMach/fetchMachDetail', payload:{ referDate:value, mach_id:data.mach.mach_id }});
+                                    dispatch({ type:'switchMach/fetchSwitchDetail', payload:{ referDate:value, mach_id:currentDetail.mach_id }});
                                     setReferDate(value);
                                     if ( inputRef.current && inputRef.current.blur ) inputRef.current.blur();
                                 }} />
                                 <div className={style['date-picker-button-right']} onClick={()=>{
                                     let temp = new Date(referDate.format('YYYY-MM-DD'));
                                     let result = moment(temp).add(1,'days');
-                                    dispatch({ type:'terminalMach/fetchMachDetail', payload:{ referDate:result, mach_id:data.mach.mach_id }});
+                                    dispatch({ type:'switchMach/fetchSwitchDetail', payload:{ referDate:result, mach_id:currentDetail.mach_id }});
                                     setReferDate(result);
                                 }}><RightOutlined /></div>
                             </div>

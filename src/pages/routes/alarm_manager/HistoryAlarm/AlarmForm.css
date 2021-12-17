@@ -1,0 +1,73 @@
+.container {
+}
+
+.item-container {
+    display:flex;
+}
+
+.item-container .item-wrapper {
+    flex:1;
+    /* padding-right:10px; */
+}
+
+.item-container .item-wrapper:last-child {
+    padding-right:0;
+}
+
+.item-container .item {
+    padding:10px;
+    height:100%;
+    color:#fff;
+    text-align:center;
+    cursor: pointer;
+}
+
+.item-container .item-wrapper:first-child .item {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+.item-container .item-wrapper:last-child .item {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.container .list {
+    margin:4px 0;
+}
+
+.container .data {
+    color:#1890ff;
+    font-weight:bold;
+    padding:0 4px;
+}
+
+/* 
+
+    处理进度样式
+*/
+.progress-container {
+    
+}
+
+.progress-title {
+    font-size:1rem;
+    color:#000;
+    font-weight:bold;
+}
+
+.progress-container .img-container {
+    width:100%;
+}
+
+.progress-container .img-container .img-wrapper {
+    width:33.3%;
+    display:inline-block;
+    vertical-align: top;
+    height:100px;
+    padding-right:10px;
+    background-repeat: no-repeat;
+    background-size:cover;
+    border-radius:4px;
+}
+

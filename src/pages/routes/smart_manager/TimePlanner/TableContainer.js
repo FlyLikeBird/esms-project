@@ -14,10 +14,8 @@ let tasks = [
     { title:'漏保任务', key:'3'}
 ];
 let switchActions = {
-    '0':'空开合闸',
-    '1':'空开脱扣',
-    '3':'空开温控1路',
-    '4':'空开温控2路'
+    '0':'合闸',
+    '1':'分断'
 }
 let weeksMap = {
     1:'周一',
@@ -52,9 +50,9 @@ function TableContainer({ dispatch, gatewayList, switchList, data, taskLoading, 
         { title:'任务名称', dataIndex:'task_name'},
         { 
             title:'执行动作', 
-            dataIndex:'switch_action',
-            render:(value)=>{
-                return <span className={value + '' === '1' ? style['tag-off'] : style['tag-on']}>{switchActions[value]}</span>
+            key:'switch_action',
+            render:(row)=>{
+                return <span className={ row['switch_action'] === 0 || row['task_type'] === 3   ? style['tag-on'] : style['tag-off']}>{ row['task_type'] === 3 ? '自检' : switchActions[row['switch_action']] }</span>
             }
         },
         {
@@ -122,7 +120,7 @@ function TableContainer({ dispatch, gatewayList, switchList, data, taskLoading, 
                             cancelText="取消"
                             onConfirm={()=>{
                                 new Promise((resolve, reject)=>{                          
-                                    dispatch({ type:'switchMach/fetchDelTask', payload:{ task_id:row.task_id, resolve, reject }})
+                                    dispatch({ type:'switchMach/fetchDelTask', payload:{ task_id:row.task_id, task_type:taskType, resolve, reject }})
                                 })
                                 .then(()=>{
                                     message.success('删除任务成功');
@@ -169,7 +167,7 @@ function TableContainer({ dispatch, gatewayList, switchList, data, taskLoading, 
             }
             <ActionConfirm visible={actionVisible} onClose={()=>setActionVisible(false)} onDispatch={()=>{
                 new Promise((resolve, reject)=>{
-                    dispatch({ type:'switchMach/pushTask', payload:{ resolve, reject, task_id:info.taskInfo.task_id } })
+                    dispatch({ type:'switchMach/pushTask', payload:{ resolve, reject, task_id:info.taskInfo.task_id, task_type:taskType } })
                 })
                 .then(()=>{
                     message.success('下发任务成功!');
@@ -189,11 +187,8 @@ function TableContainer({ dispatch, gatewayList, switchList, data, taskLoading, 
                     console.log(value);
                 }} />
                 <div className={style['custom-button']} style={{ marginRight:'20px' }} onClick={()=>{
-                    if ( value ){
-                        dispatch({ type:'switchMach/fetchTaskList', payload:{ task_type:taskType, task_name:value }});
-                    } else {
-                        message.info('请输入查询信息');
-                    }
+                    dispatch({ type:'switchMach/fetchTaskList', payload:{ task_type:taskType, task_name:value }});
+                    
                 }}><SearchOutlined />查询</div>
                 {
                     btnMaps['sw_task_add']
@@ -251,6 +246,7 @@ function TableContainer({ dispatch, gatewayList, switchList, data, taskLoading, 
                 <AddPlanForm 
                     info={info} 
                     gatewayList={gatewayList}
+                    taskType={taskType}
                     onDispatch={action=>dispatch(action)}
                     onClose={()=>setInfo({ visible:false, forEdit:false })} 
                 />

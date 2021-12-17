@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import { Tree, Spin, Skeleton, Tabs } from 'antd';
 import style from '@/pages/routes/IndexPage.css';
+import Loading from '@/pages/components/Loading';
 import TempFormContainer from './TempFormContainer';
 import LimitEleFormContainer from './LimitEleFormContainer';
 import ControllerFormContainer from './ControllerFormContainer';
@@ -26,10 +27,17 @@ let componentMaps = {
 }
 
 function SwitchController({ dispatch, switchMach }){
-    let { gatewayList, gatewayLoading, currentGateway, switchList, switchLoading, currentSwitch, optionType } = switchMach;
+    let { gatewayList, gatewayLoading, currentGateway, switchList, switchLoading, currentSwitch, optionType, optionLoading } = switchMach;
    
     return (
         <div className={style['card-container']}>
+            {
+                optionLoading 
+                ?
+                <Loading />
+                :
+                null
+            }
             {
                 gatewayLoading 
                 ?

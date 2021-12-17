@@ -56,3 +56,6 @@
     }
 }
 
+.container .weather-container audio {
+    display:block !important;
+}

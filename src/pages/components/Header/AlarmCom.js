@@ -11,17 +11,29 @@ const IconFont = createFromIconfontCN({
 });
 function AlarmCom({ msg }){
     const containerRef = useRef();
-    const [muted, setMuted] = useState(false);
+    const [muted, setMuted] = useState(true);
     useEffect(()=>{  
-        var video = document.createElement('video');
-        video.style.position = 'absolute';
-        video.style.right = '0';
-        video.id = 'my-audio';
-        video.src = '/alarm.mp4';
-        video.muted = true;
-        video.autoPlay = true;
-        video.loop = true;
-        containerRef.current.appendChild(video);
+        // var audio = document.createElement('audio');
+        
+        // audio.id = 'my-audio';
+        // audio.src = '/alarm.mp3';
+        // audio.width = '100px';
+        // audio.muted = true;
+        // audio.loop = true;
+        // audio.play();
+        // containerRef.current.appendChild(audio);
+        // // setTimeout(()=>{
+        // //     audio.muted = false;
+        // // },3000)
+        // audio.addEventListener('play', ()=>{
+        //     console.log('a');
+        // })
+        setTimeout(()=>{
+            let audio = document.getElementById('my-audio');
+            console.log(audio);
+            console.log(audio.muted);
+            audio.muted = false;
+        },3000)
         return ()=>{
             firstMsg = true;
             clearTimeout(alarmTimer);
@@ -33,6 +45,7 @@ function AlarmCom({ msg }){
             if ( !firstMsg && !muted ){
                 function run(){   
                     let audio = document.getElementById('my-audio');
+                    console.log(audio);
                     if ( audio ) {
                         audio.currentTime = 0;
                         audio.muted = false;
@@ -58,6 +71,8 @@ function AlarmCom({ msg }){
                     history.push('/sw_warning');
                 }} />
             </Popover>
+            <video src="/alarm.mp4"  muted width="420" id="my-audio">
+            </video>
             {/* <video id='my-audio' src={AlarmSound} muted={true} autoPlay={true} loop={true} style={{ position:'absolute', left:'100%' }}></video> */}
             <IconFont style={{ fontSize:'1.2rem', margin:'0 10px'}} type={ muted ? 'iconsound-off' : 'iconsound'} onClick={()=>{
                 setMuted(!muted);

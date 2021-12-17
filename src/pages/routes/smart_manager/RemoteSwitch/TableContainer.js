@@ -61,8 +61,8 @@ function TableContainer({ dispatch, loading, data, realtimeData, optionType }){
             { title:'功率因素(cosΦ)', dataIndex:'PF' },
             { title:'发生时间', dataIndex:'record_date'}
         ];
-       
     }
+    console.log(tableData);
     return (
         <div style={{ height:'100%', position:'relative' }}>
             {

@@ -33,7 +33,7 @@ export default {
                 let { user:{ company_id }} = yield select();
                 let { currentPage, forceUpdate } = action.payload || {};
                 currentPage = currentPage || 1;
-                let { data } = yield call(getSwitchList, { company_id, page:currentPage, pagesize:14 });
+                let { data } = yield call(getSwitchList, { company_id, page:currentPage, pagesize:12 });
                 if ( data && data.code === '0'){
                     yield put({ type:'getSwitchList', payload:{ data:data.data, currentPage, total:data.count }});
                     // 当网关列表有修改时及时更新其他模块的网关树结构

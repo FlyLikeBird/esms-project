@@ -52,14 +52,11 @@ function DateCom({ currentDate, onChangeDate }){
 }
 
 let switchActions = [
-    { key:0, title:'空开合闸' },
-    { key:1, title:'空开脱扣' },
-    { key:3, title:'空开温控1路' },
-    { key:4, title:'空开温控2路' }
+    { key:0, title:'合闸' },
+    { key:1, title:'分断' }
 ];
 
-function AddPlanForm({ info, gatewayList, onDispatch, onClose }){
-    let [taskType, setTaskType] = useState('1');
+function AddPlanForm({ info, gatewayList, taskType, onDispatch, onClose }){
     let [form] = Form.useForm();
     let [currentDate, setCurrentDate] = useState(moment(new Date()));
     let [weekData, setWeekData] = useState([]);
@@ -96,7 +93,7 @@ function AddPlanForm({ info, gatewayList, onDispatch, onClose }){
            
         } else {
             form.setFieldsValue({
-                task_type:1,     
+                task_type:taskType,     
                 repeat_type:1,
                 gateway_id:gatewayList.length ? gatewayList[0].key : null,
                 time:moment(new Date(), 'HH:mm:ss')
@@ -149,10 +146,10 @@ function AddPlanForm({ info, gatewayList, onDispatch, onClose }){
             <Row gutter={24}>
                 <Col span={12}>
                     <Form.Item label='任务类型' name='task_type' rules={[{ required:true, message:'信息不能为空' }]}>
-                        <Select onChange={value=>setTaskType(value)}>
-                            <Option value={1}>空开任务</Option>
+                        <Select>
+                            <Option value='1'>空开任务</Option>
                             {/* <Option value='2'>空调</Option> */}
-                            <Option value={3}>漏保任务</Option>
+                            <Option value='3'>漏保任务</Option>
                         </Select>
                     </Form.Item>
                 </Col>
@@ -215,7 +212,7 @@ function AddPlanForm({ info, gatewayList, onDispatch, onClose }){
             </Row>
             {
 
-                taskType !== '2' 
+                taskType === '1' 
                 ?
                 <Row gutter={24}>
                     <Col span={24}>
@@ -339,7 +336,13 @@ function AddPlanForm({ info, gatewayList, onDispatch, onClose }){
             <Row gutter={24}>
                 <Col span={12}>
                     <Form.Item label='执行时间' name='time' rules={[ { required:true, message:'请选择执行时间'}]}>
-                        <TimePicker style={{ width:'100%' }} locale={zhCN} allowClear={false} />
+                        <TimePicker style={{ width:'100%' }} locale={zhCN} allowClear={false} renderExtraFooter={()=>(
+                            <div style={{ display:'flex', justifyContent:'space-around' }}>
+                                <div>时</div>
+                                <div>分</div>
+                                <div>秒</div>
+                            </div>
+                        )}/>
                     </Form.Item>
                 </Col>
             </Row>

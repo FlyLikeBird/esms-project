@@ -9,6 +9,8 @@ import BillingManager from './BillingManager';
 import UserCenter from './UserCenter';
 import UserPermission from './UserPermission';
 import RegionManager from './RegionManager';
+import LogManager from './LogManager';
+import AddUserManager from './AddUserManager';
 
 let subMenuMaps = {
     'sw_system_gateway':GatewayManager,
@@ -16,7 +18,9 @@ let subMenuMaps = {
     'sw_system_feerate':BillingManager,
     'sw_system_person':UserCenter,
     'sw_system_role':UserPermission,
-    'sw_person':RegionManager
+    'sw_person':RegionManager,
+    'sw_system_log':LogManager,
+    'sw_system_user':AddUserManager
 };
 
 function SystemManager({ dispatch, user, switchMach }){

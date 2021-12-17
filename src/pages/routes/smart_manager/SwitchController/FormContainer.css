@@ -6,7 +6,7 @@
     transform:translate(-50%,-50%); */
     width:80%;
     margin:0 auto;
-    padding-top:6rem;
+    padding-top:2rem;
 }
 
 .form-container > :global(.ant-row) {
@@ -84,7 +84,10 @@
     background-color:#1890ff;
 }
 
-
+.btn-group {
+    width:250px;
+    margin:2rem auto;
+}
 /* 自动填充样式修改 */
 .form-container input:-webkit-autofill { 
 	box-shadow: 0 0 0px 1000px #303144 inset !important;

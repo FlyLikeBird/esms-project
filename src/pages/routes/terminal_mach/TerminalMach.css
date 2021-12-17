@@ -62,6 +62,7 @@
     font-size:0.8rem;
     color:rgba(255,255,255,0.6);
     margin:10px 0;
+    line-height:1.2rem;
 }
 .inline-container.dark .inline-item .text-container {
     color:#fff;

@@ -1,5 +1,6 @@
 import { 
-    getGateway, getSwitch,  refreshGateway, syncGateway, getSwitchData, getRealtimeData, 
+    getGateway, getSwitch,  refreshGateway, syncGateway, getSwitchData, getRealtimeData, selfCheck,
+    getAutoLoadSwitch, saveAutoLoadSwitch,
     pushTask, addTask, updateTask, delTask, getTaskList, turnOffSwitch, turnOnSwitch, getActionList,
     getSwitchTemp, setSwitchTemp,
     getSwitchParams, setSwitchParams,
@@ -7,6 +8,7 @@ import {
     getSwitchAutoTrip, setSwitchAutoTrip,
     getSwitchAutoCombine, setSwitchAutoCombine
 } from '../services/switchService';
+import { getSwitchList, getSwitchDetail } from '../services/gatewayService';
 import { message } from 'antd';
 const initialState = {
     gatewayList:[],
@@ -18,7 +20,6 @@ const initialState = {
     currentNode:{},
     
     switchLoading:true,
-    switchOption:{},
     taskList:[],
     actionList:[],
     actionLoading:true,
@@ -26,8 +27,11 @@ const initialState = {
     total:0,
     taskLoading:true,
     // 自动读取和存档
-  
-    // 节点数据,
+    autoLoading:false,
+    autoLoadSwitchList:[],
+    // 空开的节点数据和详情数据
+    switchDetail:{},
+    detailLoading:true,
     optionType:'1',
     switchData:[],
     switchDataLoading:true,
@@ -85,6 +89,15 @@ export default {
                 if ( reject && typeof reject === 'function') reject(data.msg);
             }
         },
+        *fetchSelfCheck(action, { put, call }){
+            let { mach_id, resolve, reject } = action.payload || {};
+            let { data } = yield call(selfCheck, { mach_id });
+            if ( data && data.code === '0'){
+                if ( resolve && typeof resolve === 'function' ) resolve();
+            } else {
+                if ( reject && typeof reject === 'function' ) reject(data.msg);
+            }
+        },
         *fetchGateway(action, { put, call, select }){
             try {
                 let { multi, single, forceUpdate } = action.payload || {};
@@ -106,28 +119,43 @@ export default {
         *fetchSwitchList(action, { put, call, select }){
             try {
                 let { user:{ company_id }, switchMach:{ currentGateway }} = yield select();
-                yield put({ type:'toggleSwitchLoading'});                
-                let { data } = yield call(getSwitch, { company_id, gateway_id:currentGateway.key });
-                if ( data && data.code === '0'){
-                    yield put({ type:'getSwitch', payload:{ data:data.data }});
-                }
-                
+                if ( currentGateway.key ){
+                    yield put({ type:'toggleSwitchLoading', payload:true });                              
+                    let { data } = yield call(getSwitch, { company_id, gateway_id:currentGateway.key });
+                    if ( data && data.code === '0'){
+                        yield put({ type:'getSwitch', payload:{ data:data.data }});
+                    }
+                } else {
+                    yield put({ type:'toggleSwitchLoading', payload:false });
+                } 
             } catch(err){
                 console.log(err);
+            }
+        },
+        *fetchSwitchDetail(action, { put, select, call }){
+            yield put.resolve({ type:'cancelSwitchDetail'});
+            yield put.resolve({ type:'cancelable', task:fetchSwitchCancelable, action:'cancelSwitchDetail' });
+            function* fetchSwitchCancelable(params){
+                let { mach_id, referDate } = action.payload || {};
+                yield put({ type:'toggleDetailLoading'});
+                let { data } = yield call(getSwitchDetail, { mach_id, date_time:referDate.format('YYYY-MM-DD') });
+                if ( data && data.code === '0'){
+                    yield put({ type:'getSwitchDetail', payload:{ data:data.data }});
+                }
             }
         },
         *fetchSwitchData(action, { put, select, call }){
             try {
                 let { user:{ company_id, timeType, startDate, endDate }, switchMach:{ currentSwitch }} = yield select();
-                console.log(currentSwitch);
-
                 if ( currentSwitch.key ) {
-                    yield put({ type:'toggleSwitchDataLoading'});
+                    yield put({ type:'toggleSwitchDataLoading', payload:true });
                     let { data } = yield call(getSwitchData, { company_id, mach_id:currentSwitch.key, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD') });
                     if ( data && data.code === '0' ) {
                         yield put({ type:'getSwitchData', payload:{ data:data.data }})
                     }
-                } 
+                } else {
+                    yield put({ type:'toggleSwitchDataLoading', payload:false });
+                }
             } catch(err){
                 console.log(err);
             }
@@ -137,16 +165,50 @@ export default {
                 let { user:{ company_id }, switchMach:{ currentSwitch }} = yield select();
                 let { resolve, reject } = action.payload || {};
                 if ( currentSwitch.key ){
-                    yield put({ type:'toggleSwitchDataLoading'});
+                    yield put({ type:'toggleSwitchDataLoading', payload:true });
                     let { data } = yield call(getRealtimeData, { company_id, mach_id:currentSwitch.key });
                     if ( data && data.code === '0' ) {
                         yield put({ type:'getRealtime', payload:{ data:data.data }});
                         if ( resolve && typeof resolve === 'function' ) resolve();
                     } else {
                         if ( reject && typeof reject === 'function' ) reject(data.msg);
-                        
+                        yield put({ type:'toggleSwitchDataLoading', payload:false });
                     }
-                }           
+                } else {
+                    yield put({ type:'toggleSwitchDataLoading', payload:false });
+                }
+            } catch(err){
+                console.log(err);
+            }
+        },
+        // 自动读取网关下空开和存档方案
+        *fetchAutoLoad(action, { put, call, select }){
+            try {
+                let { switchMach:{ currentGateway }} = yield select();
+                let { resolve, reject } = action.payload || {};
+                let { data } = yield call(getAutoLoadSwitch, { mach_id:currentGateway.key });
+                if ( data && data.code === '0'){
+                    yield put({ type:'getAutoLoad', payload:{ data:data.data }});
+                    if ( resolve && typeof resolve === 'function') resolve();
+                } else {
+                    if ( reject && typeof reject === 'function') reject(data.msg);
+                }
+            } catch(err){
+                console.log(err);
+            }
+        },
+        *saveAutoLoad(action, { put, call, select }){
+            try {
+                let { switchMach:{ currentGateway }} = yield select();
+                let { resolve, reject, machInfoList } = action.payload || {};
+                let { data } = yield call(saveAutoLoadSwitch, { mach_id:currentGateway.key, machInfoList });
+                if ( data && data.code === '0'){
+                    if ( resolve && typeof resolve === 'function') resolve();
+                    yield put({ type:'fetchGateway', payload:{ multi:true, forceUpdate:true } });
+                    yield put({ type:'fetchSwitchList' });
+                } else {
+                    if ( reject && typeof reject === 'function' ) reject(data.msg);
+                }
             } catch(err){
                 console.log(err);
             }
@@ -158,7 +220,7 @@ export default {
                 values.company_id = company_id;
                 let { data } = yield call( forEdit ? updateTask : addTask, values);
                 if ( data && data.code === '0'){
-                    yield put({ type:'fetchTaskList' });
+                    yield put({ type:'fetchTaskList', payload:{ task_type:values.task_type } });
                     if ( resolve && typeof resolve === 'function' ) resolve();
                 } else {
                     if ( reject && typeof reject === 'function') reject(data.msg);
@@ -189,10 +251,10 @@ export default {
         },
         *pushTask(action, { put, call, select }){
             let { user:{ company_id }} = yield select();
-            let { resolve, reject, task_id } = action.payload || {};
+            let { resolve, reject, task_id, task_type } = action.payload || {};
             let { data } = yield call(pushTask, { company_id, task_id });
             if ( data && data.code === '0'){
-                yield put({ type:'fetchTaskList'});
+                yield put({ type:'fetchTaskList', payload:{ task_type }});
                 if ( resolve && typeof resolve === 'function' ) resolve();
             } else {
                 if ( reject && typeof reject === 'function' ) reject(data.msg);
@@ -201,10 +263,10 @@ export default {
         *fetchDelTask(action, { put, call, select }){
             try {
                 let { user:{ company_id }} = yield select();
-                let { task_id, resolve, reject } = action.payload;
+                let { task_id, task_type, resolve, reject } = action.payload;
                 let { data } = yield call(delTask, { company_id, task_id });
                 if ( data && data.code === '0'){
-                    yield put({ type:'fetchTaskList' });
+                    yield put({ type:'fetchTaskList', payload:{ task_type }  });
                     if ( resolve && typeof resolve === 'function' ) resolve();
                 } else {
                     if ( reject && typeof reject === 'function') reject(data.msg);
@@ -271,6 +333,7 @@ export default {
         *fetchTemp(action, { put, select, call }){
             try {
                 let { switchMach:{ currentSwitch }} = yield select();
+                yield put({ type:'toggleOptionLoading'});
                 let { data } = yield call(getSwitchTemp, { mach_id:currentSwitch.key });
                 if ( data && data.code === '0'){
                     yield put({ type:'getTemp', payload:{ data:data.data }});
@@ -298,6 +361,7 @@ export default {
         *fetchParams(action, { put, select, call }){
             try {
                 let { switchMach:{ currentSwitch }} = yield select();
+                yield put({ type:'toggleOptionLoading'});
                 let { data } = yield call(getSwitchParams, { mach_id:currentSwitch.key });
                 if ( data && data.code === '0'){
                     yield put({ type:'getParams', payload:{ data:data.data }});
@@ -325,6 +389,7 @@ export default {
         *fetchLimitEle(action, { put, select, call}){
             try {
                 let { switchMach:{ currentSwitch }} = yield select();
+                yield put({ type:'toggleOptionLoading'});
                 let { data } = yield call(getSwitchLimitEle, { mach_id:currentSwitch.key });
                 if ( data && data.code === '0' ) {
                     yield put({ type:'getLimitEle', payload:{ data:data.data }})
@@ -352,6 +417,7 @@ export default {
         *fetchAutoTrip(action, { put, select, call }){
             try {
                 let { switchMach:{ currentSwitch }} = yield select();
+                yield put({ type:'toggleOptionLoading'});
                 let { data } = yield call(getSwitchAutoTrip, { mach_id:currentSwitch.key });
                 if ( data && data.code === '0' ) {
                     yield put({ type:'getAutoTrip', payload:{ data:data.data }})
@@ -379,6 +445,7 @@ export default {
         *fetchAutoCombine(action, { put, select, call }){
             try {
                 let { switchMach:{ currentSwitch }} = yield select();
+                yield put({ type:'toggleOptionLoading'});
                 let { data } = yield call(getSwitchAutoCombine, { mach_id:currentSwitch.key });
                 if ( data && data.code === '0'){
                     yield put({ type:'getAutoCombine', payload:{ data:data.data }});
@@ -403,8 +470,6 @@ export default {
                 console.log(err);
             }
         },
-        
-        // 添加网关通过地图插件，允许用户输入地址来获取到坐标值
         *fetchAction(action, { put, select, call}){
             try {
                 let { user:{ company_id }, } = yield select();
@@ -424,8 +489,8 @@ export default {
         toggleGatewayLoading(state){
             return { ...state, gatewayLoading:true };
         },
-        toggleSwitchLoading(state){
-            return { ...state, switchLoading:true };
+        toggleSwitchLoading(state, { payload }){
+            return { ...state, switchLoading:payload };
         },
         toggleTaskLoading(state){
             return { ...state, taskLoading:true };
@@ -433,15 +498,19 @@ export default {
         toggleActionLoading(state){
             return { ...state, actionLoading:true };
         },
-        toggleSwitchDataLoading(state){
-            return { ...state, switchDataLoading:true };
+        toggleSwitchDataLoading(state, { payload }){
+            return { ...state, switchDataLoading:payload };
+        },
+        toggleDetailLoading(state){
+            return { ...state, detailLoading:true };
         },
         toggleOptionLoading(state){
             return { ...state, optionLoading:true };
         },
         getGateway(state, { payload:{ data, multi, single}}){
             let { gateways } = data;
-            let currentGateway = gateways && gateways.length ? gateways[0] : {}; 
+            // 当更新网关列表时，先判断当前网关对象是否被删除, 如果有则保留当前状态，否则取网关列表的第一个网关对象
+            let currentGateway =  gateways.map(i=>i.key).includes(state.currentGateway.key ) && state.currentGateway.key ? state.currentGateway : gateways && gateways.length ? gateways[0] : {}; 
             let currentSwitch = currentGateway.children && currentGateway.children.length ? currentGateway.children[0] : {};
             if ( gateways.length ) {  
                 if ( multi ){
@@ -485,15 +554,22 @@ export default {
             return { ...state, gatewayList:temp };
         },
         getSwitch(state, { payload:{ data }}){
-            let { meterList } = data;
-            // meterList = meterList.map((item,index)=>{
-            //     if ( index % 2 === 0){
-            //         item.meter_name = item.meter_name + '-' + item.meter_name;
-            //     }
-            //     return item;
-                
-            // });
+            let { meterList, gatewayOnline } = data;
+            state.currentGateway.is_online = gatewayOnline;
             return { ...state, switchList:meterList, switchLoading:false };
+        },
+        getSwitchDetail(state, { payload:{ data }}){
+            return { ...state, switchDetail:data, detailLoading:false };
+        },
+        resetDetail(state){
+            return { ...state, detailLoading:true, switchDetail:{} };
+        },
+        getAutoLoad(state, { payload:{ data }}){
+            let { dataInfo } = data;
+            return { ...state, autoLoadSwitchList:dataInfo || [], autoLoading:true };
+        },
+        toggleAutoLoading(state, { payload }){
+            return { ...state, autoLoading:payload };
         },
         getSwitchData(state, { payload:{ data }}){
             return { ...state, switchData:data, switchDataLoading:false };
@@ -531,19 +607,19 @@ export default {
 
         getTemp(state, { payload:{ data }}){
             let { params } = data;
-            return { ...state, tempInfo:params };
+            return { ...state, tempInfo:params, optionLoading:false };
         },
         getParams(state, { payload:{ data }}){
             let { params } = data;
-            return { ...state, setterInfo:params };
+            return { ...state, setterInfo:params, optionLoading:false };
         },
         getLimitEle(state, { payload:{ data }}){
             let { params } = data;
-            return { ...state, limitEleInfo:params };
+            return { ...state, limitEleInfo:params, optionLoading:false };
         },
         getAutoTrip(state, { payload:{ data }}){
             let { params } = data;
-            return { ...state, autoTripInfo:params };
+            return { ...state, autoTripInfo:params, optionLoading:false };
         },
         getAutoCombine(state, { payload:{ data }}){
             let { params } = data;

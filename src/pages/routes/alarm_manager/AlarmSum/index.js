@@ -15,7 +15,6 @@ function AlarmSum({ dispatch, user, alarm }){
             dispatch({ type:'alarm/fetchAlarmSum'});
         }
     },[user.authorized]);
-    console.log(sumAlarm);
     return (
         <div style={{ height:'100%' }}>
             <div style={{ height:'50%', paddingBottom:'1rem', paddingRight:'0' }}>

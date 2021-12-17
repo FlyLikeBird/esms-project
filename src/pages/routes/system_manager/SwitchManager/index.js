@@ -11,7 +11,6 @@ function SwitchManager({ dispatch, user, switchMach, menu, controller, region })
     useEffect(()=>{
         dispatch({ type:'controller/init' });
     },[]);
-    
     let btnMaps = {};
     if ( menu.child && menu.child.length ){
         menu.child.forEach(item=>{
@@ -24,12 +23,12 @@ function SwitchManager({ dispatch, user, switchMach, menu, controller, region })
             width:'60px',
             fixed:'left',
             render:(text,record,index)=>{
-                return `${ ( currentPage - 1) * 14 + index + 1}`;
+                return `${ ( currentPage - 1) * 12 + index + 1}`;
             }
         },
         { title:'设备名', dataIndex:'meter_name' },
         { title:'注册码', dataIndex:'register_code' },
-        { title:'设备类型', dataIndex:'model_code' },
+        { title:'设备类型', dataIndex:'model_desc' },
         { title:'所属网关', dataIndex:'gateway' },
         { title:'责任人', dataIndex:'person_name' },
         { title:'排序值', dataIndex:'order_by' },
@@ -89,7 +88,7 @@ function SwitchManager({ dispatch, user, switchMach, menu, controller, region })
                         pagination={{
                             current:currentPage,
                             total,
-                            pageSize:15,
+                            pageSize:12,
                             showSizeChanger:false
                         }}                     
                         onChange={pagination=>{

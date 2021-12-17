@@ -40,7 +40,7 @@ function TempFormContainer({ dispatch, switchMach }){
     },[limitEleInfo])
     return (
         <div style={{ height:'100%', position:'relative' }}>
-            <Form className={style['form-container']} form={form} {...formItemLayout} style={{ width:'30%' }}>
+            <Form className={style['form-container']} form={form}  style={{ width:'30%' }}>
                 <Row gutter={24}>
                     <Col span={20}>
                         <Form.Item label='电流越限脱扣' name='current_trip_enable' valuePropName='checked' >
@@ -63,7 +63,7 @@ function TempFormContainer({ dispatch, switchMach }){
                     </Col>
                 </Row>
             </Form>
-            <div style={{ position:'absolute', left:'50%', bottom:'4rem', transform:'translateX(-50%)' }}>
+            <div className={style['btn-group']}>
                 <div className={IndexStyle['btn']} onClick={()=>{
                     form.validateFields()
                     .then(values=>{

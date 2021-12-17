@@ -244,7 +244,7 @@ const AutoCombineFormContainer = ({ dispatch, switchMach }) => {
         )}
       </Form.List>
     </Form>
-        <div style={{ position:'absolute', left:'50%', bottom:'4rem', transform:'translateX(-50%)' }}>
+        <div className={style['btn-group']}>
             <div className={IndexStyle['btn']} onClick={()=>{
                 setActionVisible(true);
             }}>保存</div>

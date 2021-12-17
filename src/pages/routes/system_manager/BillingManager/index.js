@@ -15,9 +15,8 @@ const allTimeType = {
     4:'尖时段'
 };
 
-function BillingManager({ dispatch, user, fields }){
+function BillingManager({ dispatch, user }){
     let { companyList, currentCompany, theme } = user;
-    let { energyList, energyInfo } = fields;
     useEffect(()=>{
         dispatch({ type:'billing/init'});
         return ()=>{
@@ -58,4 +57,4 @@ function BillingManager({ dispatch, user, fields }){
 BillingManager.propTypes = {
 };
 
-export default connect( ({ user, fields }) => ({ user, fields }))(BillingManager);
+export default connect( ({ user }) => ({ user }))(BillingManager);

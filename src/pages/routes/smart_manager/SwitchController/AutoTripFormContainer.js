@@ -43,7 +43,7 @@ function AutoTripFormContainer({ dispatch, switchMach }){
     const [form] = Form.useForm();
     return (
         <div style={{ height:'100%', position:'relative' }}>
-            <Form form={form} className={style['form-container']} {...formItemLayout} style={{ width:'50%'}} onFinish={values=>{
+            <Form form={form} className={style['form-container']} style={{ width:'50%'}} onFinish={values=>{
                 new Promise((resolve, reject)=>{
                     dispatch({ type:'switchMach/fetchSetSwitchController', payload:{ values, resolve, reject }})
                 })
@@ -54,16 +54,16 @@ function AutoTripFormContainer({ dispatch, switchMach }){
                 .catch(msg=>message.info(msg))
             }}>
                 <Row gutter={24}>
-                    <Col span={12}>            
+                    <Col span={8}>            
                         <Form.Item label="过温报警激活" name="over_temp_alarm_enable" valuePropName='checked'>                       
                             <Switch className={style['custom-switch']} checkedChildren="激活" unCheckedChildren="禁止"  />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>            
-                        <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.over_temp_alarm_enable !== currentValues.over_temp_alarm_enable}>                     
+                    <Col span={16}>            
+                        <Form.Item label="过温报警参数" shouldUpdate={(prevValues, currentValues) => prevValues.over_temp_alarm_enable !== currentValues.over_temp_alarm_enable}>                     
                             {({ getFieldValue }) => {   
                                 return (   
-                                    <Form.Item label="过温报警参数" name="over_temp_alarm_value">                       
+                                    <Form.Item noStyle name="over_temp_alarm_value">                       
                                         <Input addonAfter="℃" disabled={getFieldValue('over_temp_alarm_enable') === false ? true : false } placeholder="输入值为1 ~ 100" /> 
                                     </Form.Item>
                                 )
@@ -73,16 +73,16 @@ function AutoTripFormContainer({ dispatch, switchMach }){
                     </Col>
                 </Row>
                 <Row gutter={24}>
-                    <Col span={12}>            
+                    <Col span={8}>            
                         <Form.Item label="过温脱扣激活" name="over_temp_trip_enable" valuePropName='checked'>                       
                             <Switch className={style['custom-switch']} checkedChildren="激活" unCheckedChildren="禁止"  />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>            
-                        <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.over_temp_trip_enable !== currentValues.over_temp_trip_enable}>                     
+                    <Col span={16}>            
+                        <Form.Item label="过温脱扣参数" shouldUpdate={(prevValues, currentValues) => prevValues.over_temp_trip_enable !== currentValues.over_temp_trip_enable}>                     
                             {({ getFieldValue }) => {
                                 return (   
-                                    <Form.Item label="过温脱扣参数" name="over_temp_trip_value">                       
+                                    <Form.Item noStyle name="over_temp_trip_value">                       
                                         <Input addonAfter="℃" disabled={Number(getFieldValue('over_temp_trip_enable')) === 0 ? true : false } placeholder="输入值为1 ~ 100" /> 
                                     </Form.Item>
                                 )                               
@@ -91,16 +91,16 @@ function AutoTripFormContainer({ dispatch, switchMach }){
                     </Col>
                 </Row>
                 <Row gutter={24}>
-                    <Col span={12}>            
+                    <Col span={8}>            
                         <Form.Item label="过压报警激活" name="over_voltage_alarm_enable" valuePropName='checked'>                       
                             <Switch className={style['custom-switch']} checkedChildren="激活" unCheckedChildren="禁止"  />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>            
-                        <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.over_voltage_alarm_enable !== currentValues.over_voltage_alarm_enable}>                     
+                    <Col span={16}>            
+                        <Form.Item label="过压报警参数" shouldUpdate={(prevValues, currentValues) => prevValues.over_voltage_alarm_enable !== currentValues.over_voltage_alarm_enable}>                     
                             {({ getFieldValue }) => {
                                 return (   
-                                    <Form.Item label="过压报警参数" name="over_voltage_alarm_value">                       
+                                    <Form.Item noStyle name="over_voltage_alarm_value">                       
                                         <Input addonAfter="%" disabled={Number(getFieldValue('over_voltage_alarm_enable')) === 0 ? true : false }  /> 
                                     </Form.Item>
                                 )    
@@ -109,16 +109,16 @@ function AutoTripFormContainer({ dispatch, switchMach }){
                     </Col>
                 </Row>
                 <Row gutter={24}>
-                    <Col span={12}>            
+                    <Col span={8}>            
                         <Form.Item label="过压脱扣激活" name="over_voltage_trip_enable" valuePropName='checked'>                       
                             <Switch className={style['custom-switch']} checkedChildren="激活" unCheckedChildren="禁止"  />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>            
-                        <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.over_voltage_trip_enable !== currentValues.over_voltage_trip_enable}>                     
+                    <Col span={16}>            
+                        <Form.Item label="过压脱扣参数" shouldUpdate={(prevValues, currentValues) => prevValues.over_voltage_trip_enable !== currentValues.over_voltage_trip_enable}>                     
                             {({ getFieldValue }) => {
                                 return (   
-                                    <Form.Item label="过压脱扣参数" name="over_voltage_trip_value">                       
+                                    <Form.Item  noStyle name="over_voltage_trip_value">                       
                                         <Input addonAfter="%" disabled={Number(getFieldValue('over_voltage_trip_enable')) === 0 ? true : false }  /> 
                                     </Form.Item>
                                 )    
@@ -127,16 +127,16 @@ function AutoTripFormContainer({ dispatch, switchMach }){
                     </Col>
                 </Row>
                 <Row gutter={24}>
-                    <Col span={12}>            
+                    <Col span={8}>            
                         <Form.Item label="欠压报警激活" name="low_voltage_alarm_enable" valuePropName='checked'>                       
                             <Switch className={style['custom-switch']} checkedChildren="激活" unCheckedChildren="禁止"  />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>            
-                        <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.low_voltage_alarm_enable !== currentValues.low_voltage_alarm_enable}>                     
+                    <Col span={16}>            
+                        <Form.Item label="欠压报警参数" shouldUpdate={(prevValues, currentValues) => prevValues.low_voltage_alarm_enable !== currentValues.low_voltage_alarm_enable}>                     
                             {({ getFieldValue }) => {
                                 return (   
-                                    <Form.Item label="欠压报警参数" name="low_voltage_alarm_value">                       
+                                    <Form.Item noStyle name="low_voltage_alarm_value">                       
                                         <Input addonAfter="%" disabled={Number(getFieldValue('low_voltage_alarm_enable')) === 0 ? true : false }  /> 
                                     </Form.Item>
                                 )    
@@ -145,16 +145,16 @@ function AutoTripFormContainer({ dispatch, switchMach }){
                     </Col>
                 </Row>
                 <Row gutter={24}>
-                    <Col span={12}>            
+                    <Col span={8}>            
                         <Form.Item label="欠压脱扣激活" name="low_voltage_trip_enable" valuePropName='checked'>                       
                             <Switch className={style['custom-switch']} checkedChildren="激活" unCheckedChildren="禁止"  />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>            
-                        <Form.Item shouldUpdate={(prevValues, currentValues) => prevValues.low_voltage_trip_enable !== currentValues.low_voltage_trip_enable}>                     
+                    <Col span={16}>            
+                        <Form.Item label="欠压脱扣参数" shouldUpdate={(prevValues, currentValues) => prevValues.low_voltage_trip_enable !== currentValues.low_voltage_trip_enable}>                     
                             {({ getFieldValue }) => {
                                 return (   
-                                    <Form.Item label="欠压脱扣参数" name="low_voltage_trip_value">                       
+                                    <Form.Item noStyle name="low_voltage_trip_value">                       
                                         <Input addonAfter="%" disabled={Number(getFieldValue('low_voltage_trip_enable')) === 0 ? true : false }  /> 
                                     </Form.Item>
                                 )    
@@ -163,7 +163,7 @@ function AutoTripFormContainer({ dispatch, switchMach }){
                     </Col>
                 </Row>
             </Form>
-            <div style={{ position:'absolute', left:'50%', bottom:'4rem', transform:'translateX(-50%)' }}>
+            <div className={style['btn-group']} >
                 <div className={IndexStyle['btn']} onClick={()=>{
                     form.validateFields()
                     .then(values=>{

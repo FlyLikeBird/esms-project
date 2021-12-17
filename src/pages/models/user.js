@@ -9,7 +9,7 @@ import moment from 'moment';
 const reg = /\/info_manage_menu\/manual_input\/([^\/]+)\/(\d+)/;
 const companyReg = /\?companyId=(\d*)/;
 const agentReg = /\?agent=(.*)/;
-const agentReg2 = /iot-(.*)/;
+const agentReg2 = /safe-(.*)/;
 let energyList = [
     { type_name:'电', type_code:'ele', type_id:'1', unit:'kwh'},
     { type_name:'水', type_code:'water', type_id:'2', unit:'m³'},
@@ -21,10 +21,10 @@ function createWebSocket(url, data, companyId, dispatch){
     let ws = new WebSocket(url);
     // console.log(data);
     ws.onopen = function(){
-        if ( data.agent_id){
-            ws.send(`agent:${data.agent_id}`);
-        }
-        ws.send(`com:${companyId}`);
+        // if ( data.agent_id){
+        //     ws.send(`agent:${data.agent_id}`);
+        // }
+        ws.send(`switch:${companyId}`);
     };
     ws.onclose = function(){
         console.log('socket close...');
@@ -125,11 +125,7 @@ export default {
                     dispatch({ type:'fetchNewThirdAgent', payload:temp });
                     return ;
                 }
-                // 旧版第三方代理商特殊处理
-                if ( pathname.includes('/login')) {         
-                    dispatch({ type:'thirdAgentAuth', payload:{ pathname, search:location.search }});
-                    return ;
-                }
+               
                 if ( pathname !== '/login') {
                     new Promise((resolve, reject)=>{
                         dispatch({type:'userAuth', payload: { dispatch, query:location.search, resolve, pathname }})
@@ -246,11 +242,12 @@ export default {
             let { user:{ userInfo, thirdAgent }} = yield select();
             if ( Object.keys(thirdAgent).length ){
                 yield put({ type:'clearUserInfo'});
-                yield put({ type:'fields/cancelAll'});
-                yield put(routerRedux.push(`/login?agent=${encryptBy(thirdAgent.agent_id)}`)); 
+                yield put({ type:'switchMach/reset'});
+                yield put(routerRedux.push('/login'));
+                // yield put(routerRedux.push(`/login?agent=${encryptBy(thirdAgent.agent_id)}`)); 
             } else {
                 yield put({type:'clearUserInfo'});
-                yield put({ type:'fields/cancelAll'});
+                yield put({ type:'switchMach/reset'});
                 yield put(routerRedux.push('/login'));
             }
             if ( socket && socket.close ){
@@ -404,7 +401,7 @@ export default {
             return { ...state, thirdAgent:data };
         },
         getNewThirdAgent(state, { payload:{ data }}){
-            return { ...state, newThirdAgent:data };
+            return { ...state, thirdAgent:data };
         },
         updateLogo(state, { payload }){
             return { ...state, currentCompany:payload };

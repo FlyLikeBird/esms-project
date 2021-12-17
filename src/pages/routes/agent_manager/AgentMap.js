@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import { Spin } from 'antd';
-import icon from '../../../../public/arrow-normal.png';
+import arrowNormal from '../../../../public/arrow-normal.png';
+import arrowError from '../../../../public/arrow-error.png';
 import style from './AgentManager.css';
 let map = null;
 function AgentMap({ companyList, msg, AMap, dispatch }) {
-    const [loaded, toggleLoaded] = useState(false);
+    const [isLoading, setLoading] = useState(true);
     useEffect(()=>{
         if ( !AMap ){
             AMapLoader.load({
@@ -30,30 +31,35 @@ function AgentMap({ companyList, msg, AMap, dispatch }) {
     },[]);
     useEffect(()=>{
         if ( AMap ){
-            map = new AMap.Map('my-map',{
-                resizeEnable:true,
-                zoom:7,
-                mapStyle: 'amap://styles/darkblue'
-            });
-            toggleLoaded(true);        
-        }
-    },[AMap])
-    useEffect(()=>{
-        if ( msg.detail && msg.detail.length ){
-            if ( AMap ){
-                let info = msg.detail[0];
-                let company = companyList[0] || {};
-                // console.log(info);
-                // console.log(company);
-                var points = [[108.27331,22.78121],[113.27324,23.15792],[119.27345,26.04769]];   
+            let company = companyList[0] || {};
+            if ( !map ){
+                map = new AMap.Map('my-map',{
+                    resizeEnable:true,
+                    zoom:14,
+                    mapStyle: 'amap://styles/darkblue',
+                    center:[company.lng, company.lat]
+                });
                 companyList.forEach(item=>{
                     let marker = new AMap.Marker({
                         position:new AMap.LngLat(item.lng,item.lat),
                         title:'',
-                        icon:icon
+                        icon:arrowNormal
                     });
                     map.add(marker);
                 });
+                setLoading(false);
+            }
+            if ( msg.detail && msg.detail.length ){
+                let info = msg.detail[0];
+                companyList.forEach(item=>{
+                    let marker = new AMap.Marker({
+                        position:new AMap.LngLat(item.lng,item.lat),
+                        title:'',
+                        icon:arrowError
+                    });
+                    map.add(marker);
+                });
+                // var points = [[108.27331,22.78121],[113.27324,23.15792],[119.27345,26.04769]];   
                 var content = `
                     <div class=${style['info-container']} onClick="">
                         <div class=${style['info-title']}>${info.warning_info}</div>
@@ -71,18 +77,19 @@ function AgentMap({ companyList, msg, AMap, dispatch }) {
                     offset: new AMap.Pixel(0,-50)
                 });
                 // console.log(infoWindow);
-                infoWindow.open(map,position);
-            }  
+                infoWindow.open(map,position);          
+            } 
         }
+        
     },[msg, AMap])
     return (
         <div style={{ height:'100%' }}>
             {
-                loaded 
+                isLoading 
                 ?
-                null
+                <Spin size='large' className={style['spin']}>地图加载中...</Spin>
                 :
-                <Spin size='large' className={style['spin']}></Spin>
+                null
             }
             <div id='my-map' style={{ height:'100%' }}></div>
         </div>

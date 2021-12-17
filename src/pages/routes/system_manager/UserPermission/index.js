@@ -26,9 +26,11 @@ function treeSelect(node, result){
 
 let currentRole = '';
 function UserPermission({ dispatch, user, permission }){
-    let { userMenu } = user;
+    let { userMenu, userInfo } = user;
     let { roleList, userPermission } = permission;
     let [visible, setVisible] = useState(false);
+    let list = roleList.filter(i=>i.role_type > userInfo.role_type );
+
     useEffect(()=>{
        dispatch({ type:'permission/fetchRoleList'}); 
        return ()=>{
@@ -52,9 +54,9 @@ function UserPermission({ dispatch, user, permission }){
     return (
         <div className={style['card-container']}>
             <Table 
-                rowKey='record_id'
+                rowKey='role_id'
                 columns={columns}
-                dataSource={roleList}
+                dataSource={list}
                 className={style['self-table-container'] + ' ' + style['dark'] }
                 pagination={false}
         
@@ -89,7 +91,6 @@ function UserPermission({ dispatch, user, permission }){
                 )}
             >   
                 <Tree
-                    rowKey='role_id'
                     className={style['tree-container']}
                     checkable
                     checkStrictly

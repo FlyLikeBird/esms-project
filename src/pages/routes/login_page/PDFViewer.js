@@ -4,17 +4,27 @@ import { Document, Page, pdfjs } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
+function readPDF(){
+    var reader = new FileReader();
+    reader.readAsDataURL('./report2.js');
+    
+}
 function MyApp() {
   const [numPages, setNumPages] = useState(null);
 
-  function onDocumentLoadSuccess({ numPages }) {
+  function onDocumentLoadSuccess({ numPages, a, b }) {
     setNumPages(numPages);
+    console.log(numPages);
+    console.log(a);
+    console.log(b);
+    console.log(c.offsetLight);
+    
   }
 
   return (
-    <div>
+    <div >
       <Document
-        file='/report.pdf'
+        file='/report2.pdf'
         onLoadSuccess={onDocumentLoadSuccess}     
       >
         {
@@ -24,6 +34,7 @@ function MyApp() {
         }
       </Document>
       {/* <p>Page {pageNumber} of {numPages}</p> */}
+      <div>download</div>
     </div>
   );
 }

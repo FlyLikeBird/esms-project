@@ -23,12 +23,10 @@ function TableContainer({ data }){
     if ( Object.keys(data).length ){
         tableData.unshift({ type_name:'合计', ...sumObj });
     }
-    // console.log(sumObj);
-    // console.log(tableData);
-    
+   
     return (
         <Table 
-            rowKey={(text,record)=>text.attr_name}
+            rowKey='type_name'
             columns={columns}
             dataSource={tableData}
             className={style['self-table-container'] + ' ' + style['dark'] }

@@ -157,7 +157,6 @@ html,body {
     border-right:1px solid #f0f0f0;
     border-bottom:1px solid #f0f0f0;
     color:#3c3d44;
-    font-weight:bold;
     font-size:1rem;
 }
 .self-table-container:global(.ant-table-wrapper) :global(.ant-table) table tbody > tr > td.self-cell-wrapper {
@@ -247,10 +246,10 @@ html,body {
 }
 @media (max-width:1440px){
     .self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) table > thead > tr > th {
-        padding:8px 6px;
+        padding:4px 6px;
     }
     .self-table-container.dark:global(.ant-table-wrapper) :global(.ant-table) table > tbody > tr > td {
-        padding:8px 6px;
+        padding:4px 6px;
     }
 }
 /* 
@@ -312,7 +311,7 @@ html,body {
 }
 @media (max-width:1440px){
     .container .custom-tabs:global(.ant-tabs) :global(.ant-tabs-nav) :global(.ant-tabs-tab){
-        padding:6px 4px;
+        padding:10px 4px;
         margin:0 0 0 24px
     }
 }
@@ -923,4 +922,11 @@ html,body {
         height:18px;
         line-height:18px;
     }
+}
+
+.empty-text {
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%, -50%);
 }
