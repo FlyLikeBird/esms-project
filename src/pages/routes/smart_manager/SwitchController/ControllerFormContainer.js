@@ -21,7 +21,7 @@ function ControllerFormContainer({ dispatch, switchMach }){
     const [form] = Form.useForm();
     let { setterInfo } = switchMach;
     useEffect(()=>{
-        dispatch({ type:'switchMach/fetchParams' });
+        dispatch({ type:'switchMach/initParams' });
     },[]);
     useEffect(()=>{
         if ( Object.keys(setterInfo).length ){

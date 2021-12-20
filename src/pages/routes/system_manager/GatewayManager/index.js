@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'dva';
-import { Modal, Table, Button, Popconfirm, message } from 'antd';
+import { Modal, Table, Button, Input,  Popconfirm, message } from 'antd';
+import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import style from '@/pages/routes/IndexPage.css';
 import AddForm from './AddForm';
 function GatewayManager({ dispatch, user, gateway, menu }){
     let { gatewayList } = gateway;
+    let inputRef = useRef();
     let [info, setInfo] = useState({ visible:false, forEdit:false, currentMach:null });
+    let [value, setValue] = useState('');
     useEffect(()=>{
         if ( user.authorized ){
             dispatch({ type:'gateway/fetchGateway' });
@@ -73,21 +76,32 @@ function GatewayManager({ dispatch, user, gateway, menu }){
     ] 
     return (
             <div className={style['card-container']}>
-                    {
-                        btnMaps['sw_gateway_add']
-                        ?
-                        <div style={{ padding:'1rem'}}>
-                            <Button type="primary"  onClick={() => setInfo({ visible:true, forEdit:false }) }>添加网关</Button>                
-                        </div>
-                        :
-                        null
-                    }
-                    
+                    <div style={{ display:'flex', alignItems:'center', height:'50px', color:'#fff', padding:'1rem' }}>              
+                        <Input ref={inputRef} placeholder='输入网关名查询' style={{ width:'280px'}} className={style['custom-input']} value={value} onChange={e=>setValue(e.target.value)} suffix={<CloseCircleOutlined style={{ cursor:'pointer' }} onClick={()=>{
+                            setValue('');
+                            dispatch({ type:'gateway/fetchGateway'});
+                            if ( inputRef.current && inputRef.current.blur ) inputRef.current.blur();
+                        }} />} />
+                        <Button type='primary' style={{ marginRight:'20px' }} onClick={()=>{
+                            dispatch({ type:'gateway/fetchGateway', payload:{ keyword:value } });
+
+                        }}><SearchOutlined />查询</Button>
+                        {
+                            btnMaps['sw_gateway_add']
+                            ?
+                            <Button type="primary"  onClick={() => setInfo({ visible:true, forEdit:false }) }>添加网关</Button>
+                            :
+                            null
+                        }
+                       
+
+                    </div>
+                   
                     <Table
                         className={style['self-table-container'] + ' ' + style['dark'] }
                         columns={columns}
                         dataSource={gatewayList}
-                        locale={{emptyText:'还没有配置任何网关'}}
+                        locale={{emptyText:'查询的网关设备为空'}}
                         bordered={true}
                         rowKey="mach_id"
                     

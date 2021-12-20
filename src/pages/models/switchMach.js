@@ -63,9 +63,11 @@ export default {
         },
         *init(action, { put }){
             let { resolve, forceUpdate } = action.payload || {};
-            yield put.resolve({ type:'fetchGateway', payload:{ multi:true }});
-            yield put.resolve({ type:'fetchSwitchList', payload:{ forceUpdate }});
-            yield put.resolve({ type:'fetchSwitchData' });
+            yield put.resolve({ type:'fetchGateway' });
+            yield put({ type:'fetchSwitchList' });
+            yield put({ type:'fetchSwitchData' });
+            // 获取空开的模型库数据，添加快捷修改设备名功能
+            yield put({ type:'controller/fetchSwitchList'});
             if ( resolve && typeof resolve === 'function' ) resolve();
         },
         *refresh(action, { select, put, call }){
@@ -146,12 +148,17 @@ export default {
         },
         *fetchSwitchData(action, { put, select, call }){
             try {
-                let { user:{ company_id, timeType, startDate, endDate }, switchMach:{ currentSwitch }} = yield select();
-                if ( currentSwitch.key ) {
+                let { user:{ company_id, timeType, startDate, endDate }, switchMach:{ currentNode }} = yield select();
+                let { resolve, reject } = action.payload || {};
+                if ( currentNode.key ) {
                     yield put({ type:'toggleSwitchDataLoading', payload:true });
-                    let { data } = yield call(getSwitchData, { company_id, mach_id:currentSwitch.key, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD') });
+                    let { data } = yield call(getSwitchData, { company_id, mach_id:currentNode.key, begin_date:startDate.format('YYYY-MM-DD'), end_date:endDate.format('YYYY-MM-DD') });
                     if ( data && data.code === '0' ) {
-                        yield put({ type:'getSwitchData', payload:{ data:data.data }})
+                        yield put({ type:'getSwitchData', payload:{ data:data.data }});
+                        if ( resolve && typeof resolve === 'function' ) resolve();
+                    } else {
+                        if ( reject && typeof reject === 'function' ) reject(data.msg);
+                        yield put({ type:'toggleSwitchDataLoading', payload:false });
                     }
                 } else {
                     yield put({ type:'toggleSwitchDataLoading', payload:false });
@@ -162,11 +169,11 @@ export default {
         },
         *fetchRealtimeData(action, { put, select, call }){
             try{
-                let { user:{ company_id }, switchMach:{ currentSwitch }} = yield select();
+                let { user:{ company_id }, switchMach:{ currentNode }} = yield select();
                 let { resolve, reject } = action.payload || {};
-                if ( currentSwitch.key ){
+                if ( currentNode.key ){
                     yield put({ type:'toggleSwitchDataLoading', payload:true });
-                    let { data } = yield call(getRealtimeData, { company_id, mach_id:currentSwitch.key });
+                    let { data } = yield call(getRealtimeData, { company_id, mach_id:currentNode.key });
                     if ( data && data.code === '0' ) {
                         yield put({ type:'getRealtime', payload:{ data:data.data }});
                         if ( resolve && typeof resolve === 'function' ) resolve();
@@ -357,6 +364,10 @@ export default {
                 console.log(err);
             }
         },
+        *initParams(action, { put }){
+            yield put.resolve({ type:'fetchGateway', payload:{ single:true }});
+            yield put({ type:'fetchParams'});
+        },
         // 获取/设置空开控制参数
         *fetchParams(action, { put, select, call }){
             try {
@@ -531,6 +542,8 @@ export default {
         },
         updateGateway(state, { payload:{ multi, single }}){
             let temp = state.gatewayList.concat();
+            let currentGateway =  temp && temp.length ? temp[0] : {}; 
+            let currentSwitch = currentGateway.children && currentGateway.children.length ? currentGateway.children[0] : {};
             if ( multi ){
                 temp.forEach(item=>{
                     if ( item.key === state.currentGateway.key ) {  
@@ -551,7 +564,7 @@ export default {
                     item.disabled = false;
                 })
             }
-            return { ...state, gatewayList:temp };
+            return { ...state, gatewayList:temp, currentGateway, currentNode:currentGateway, currentSwitch  };
         },
         getSwitch(state, { payload:{ data }}){
             let { meterList, gatewayOnline } = data;
@@ -584,15 +597,15 @@ export default {
             } else {
                 currentSwitch = payload.children && payload.children.length ? payload.children[0] : {}
             }
-            if ( state.gatewayList.length ) {
-                state.gatewayList.forEach(item=>{
-                    if ( item.key === payload.key ) {  
-                        item.className = 'selected-parent';
-                    } else {
-                        item.className = '';
-                    }
-                })
-            }
+            // if ( state.gatewayList.length ) {
+            //     state.gatewayList.forEach(item=>{
+            //         if ( item.key === payload.key ) {  
+            //             item.className = 'selected-parent';
+            //         } else {
+            //             item.className = '';
+            //         }
+            //     })
+            // }
             return { ...state, currentGateway:payload, currentSwitch };
         },
         toggleSwitch(state, { payload }){

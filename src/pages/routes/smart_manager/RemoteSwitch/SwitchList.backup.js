@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Tag, Modal, Button, Input, Tooltip, Spin, message } from 'antd';
+import { Tag, Modal, Button, Tooltip, Spin, message } from 'antd';
 import moment from 'moment';
 import style from './RemoteSwitch.css';
 import IndexStyle from '@/pages/routes/IndexPage.css';
 import { BarChartOutlined, SettingOutlined } from '@ant-design/icons';
 import SyncProgress from './SyncProgress';
 import ActionConfirm from '@/pages/components/ActionConfirm';
-import SwitchItem from './SwitchItem';
 import gatewayImg from '../../../../../public/gateway.png';
 import kkImg1P from '../../../../../public/kk_1p.png';
 import kkImg2P from '../../../../../public/kk_2p.png';
@@ -35,7 +34,15 @@ let switchTypesMap = {
     '3':'开关',
     '4':'空调'
 };
-
+function sortData(data){
+    let posArr = [], sum = 0; 
+    data.forEach((item,index)=>{
+        let temp = sum + ( item.switch_type === 2 ? 60 : 50 );
+        posArr.push(temp);
+        sum += ( item.switch_type === 2 ? 120 : 100 ) + 20;
+    });
+    return posArr;
+}
 let canDrag = false, 
     currentTarget = null, 
     prevIndex = 0,
@@ -48,17 +55,135 @@ let canDrag = false,
 
 function SwitchList({ dispatch, data, currentGateway, btnMaps, onSelectDetail, modelList }){
     const containerRef = useRef();
-    let inputRef = useRef();
+    const posArr = useRef([]);
     let [currentMach, setCurrentMach] = useState({});
     let [visible, setVisible] = useState(false);
     let [actionVisible, setActionVisible] = useState(false);
-    
+    let [editing, setEditing] = useState(null);
     let [machList, setMachList] = useState([{ is_gateway:true, gateway_id:currentGateway.key },...data]);
     let [checkLoading, setCheckLoading] = useState(false);
     useEffect(()=>{
         setMachList([{ is_gateway:true, gateway_id:currentGateway.key }, ...data]);
     },[data]);
-  
+    useEffect(()=>{
+        posArr.current = sortData(data);
+    },[machList])
+   
+    useEffect(()=>{
+        let items = document.getElementsByClassName('draggable-item');         
+        function handleMouseDown(e){
+            canDrag = true;
+            posX = e.pageX;
+            posY = e.pageY;
+            currentTarget = e.currentTarget;
+            let doms = document.getElementsByClassName('draggable-item');
+            doms.forEach(item=>{
+                if ( item.attributes['data-index'].value === currentTarget.attributes['data-index'].value ){
+                    prevIndex = currentIndex = +item.attributes['data-index'].value;
+                }
+            })
+            // console.log(currentIndex);
+            // console.log(posX, posY);
+        }
+        function handleMouseUp(){
+            // console.log('mouseup');
+            if ( canDrag ){
+                if ( currentDom ){
+                    let items = document.getElementsByClassName('draggable-item');
+                    items.forEach(item=>{
+                        item.style.opacity = '1';
+                    })
+                    if ( containerRef.current && items[items.length - 1]){
+                        containerRef.current.removeChild(items[items.length - 1]);
+                    }
+                }
+                canDrag = false;
+                currentDom = null;
+                hasInsert = false;   
+                prevIndex = 0;
+                currentIndex = 0;
+                moveX = 0;
+                moveY = 0;        
+                // 删除绝对定位的临时div
+                currentTarget.style.opacity = '1';
+                currentTarget = null;
+            }                         
+        }
+
+        function handleMouseMove(e){
+            if ( canDrag ){
+                moveX = currentTarget.offsetLeft + e.pageX - posX;
+                moveY = currentTarget.offsetTop + e.pageY - posY;  
+                if ( !hasInsert ){
+                    let div = currentTarget.cloneNode(true);
+                    // div.className = 'draggable-item';
+                    div.style.position = 'absolute';
+                    // div.style.width = currentTarget.attributes['data-type'].value === 'lb' ? '120px' : '100px';
+                    currentDom = div;
+                    containerRef.current.appendChild(div);
+                    hasInsert = true;
+                    currentTarget.style.opacity = '0.2';
+                    // currentDom.addEventListener('mousemove', handleMouseMove);
+                    // currentDom.addEventListener('mouseup', handleMouseUp);
+                    // console.log(div);
+                }              
+                if ( currentDom ){
+                    currentDom.style.top = moveY + 'px';
+                    currentDom.style.left = moveX + 'px';
+                    // 判断浮动项当前的位置处于哪一个索引的位置  
+                    // console.log(posArr.current);              
+                    for( let i=0;i<posArr.current.length; i++){
+                        // 如果是第一项,左侧临界点
+                        if ( moveX < posArr.current[0] ) {
+                            currentIndex = 0;
+                        } else if ( moveX >= posArr.current[posArr.current.length - 1]  ){
+                            // 如果是最后一项，右侧临界点
+                            currentIndex = posArr.current.length - 1;
+                        } else {
+                            // 如果是中间项
+                            if ( moveX >= posArr.current[currentIndex + 1] ) {
+                                // console.log('+++++');
+                                currentIndex = currentIndex + 1;
+                            }
+                            if ( moveX < posArr.current[currentIndex - 1]) {
+                                // console.log('-----');
+                                currentIndex = currentIndex - 1;
+                            }
+                        }
+                        // console.log(currentIndex);
+                    }
+                    // 监听索引值的变化，有变化时才执行dom排序操作
+                    if ( prevIndex !== currentIndex ){
+                        // console.log('func()...');
+                        // console.log(prevIndex, currentIndex);
+                        currentTarget.style.opacity = '1';
+                        setMachList(data=>{
+                            let newArr = data.concat();
+                            let temp = newArr[prevIndex];
+                            newArr[prevIndex] = newArr[currentIndex];
+                            newArr[currentIndex] = temp;
+                            return newArr;
+                        })
+                        
+                    }
+                    prevIndex = currentIndex;
+                }
+            }
+        }
+        // items.forEach((item,index)=>{
+        //     item.addEventListener('mousedown', handleMouseDown);
+        // });
+        // window.addEventListener('mousemove', handleMouseMove);
+        // window.addEventListener('mouseup', handleMouseUp);
+        return ()=>{
+            // window.removeEventListener('mousemove', handleMouseMove);
+            // window.removeEventListener('mouseup', handleMouseUp);
+            // let items = document.getElementsByClassName('draggable-item');
+            // items.forEach(item=>{
+            //     item.removeEventListener('mousedown', handleMouseDown);
+            // })
+        }
+    },[]);
     return (
         machList && machList.length 
         ?
@@ -207,9 +332,17 @@ function SwitchList({ dispatch, data, currentGateway, btnMaps, onSelectDetail, m
                                     :
                                     null
                                 }                              
-                                <div className={ item.meter_name && item.meter_name.length >= 12 ? style['float-item'] + ' ' + style['auto-scroll'] : style['float-item']} style={{ color: item.switch_status === 2 || item.online_status !== 1 ? '#fff' : '#04a3fe', bottom:'6px', zIndex:'4' }}>
-                                    
-                                    <SwitchItem dispatch={dispatch} modelList={modelList} item={item} />
+                                <div className={ item.meter_name && item.meter_name.length >= 12 ? style['float-item'] + ' ' + style['auto-scroll'] : style['float-item']} style={{ color: item.switch_status === 2 || item.online_status !== 1 ? '#fff' : '#04a3fe', bottom:'6px'}}>
+                                    {/* {
+                                        editing 
+                                        ?
+                                        <Input />
+                                    } */}
+                                    <span onClick={(e)=>{
+                                        e.stopPropagation();
+                                        let target = modelList.filter(i=>i.mach_id === item.mach_id)[0];
+                                        console.log(target);
+                                    }}>{ item.meter_name }</span>
                                 </div>                            
                         </div>
                     ))

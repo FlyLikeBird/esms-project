@@ -47,9 +47,9 @@ function LoginPage({ dispatch, user }) {
         <Redirect to='/' />
         :
         <div className={style.container} >
-            <div className={style['logo-container']}>
+            {/* <div className={style['logo-container']}>
                 <img src={Object.keys(thirdAgent).length ? thirdAgent.logo_path : ''} style={{ marginRight:'20px' }} />
-            </div>
+            </div> */}
             <div style={{ position:'fixed', right:'1rem', top:'1rem', zIndex:'2' }} onClick={()=>{
                 if ( dataURL ){
                     let linkBtn = document.createElement('a');

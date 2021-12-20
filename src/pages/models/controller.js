@@ -31,14 +31,15 @@ export default {
         *fetchSwitchList(action, { put, call, select }){
             try {
                 let { user:{ company_id }} = yield select();
-                let { currentPage, forceUpdate } = action.payload || {};
+                let { currentPage, gateway_id, forceUpdate } = action.payload || {};
                 currentPage = currentPage || 1;
-                let { data } = yield call(getSwitchList, { company_id, page:currentPage, pagesize:12 });
+                let { data } = yield call(getSwitchList, { company_id, gateway_id, page:currentPage, pagesize:12 });
                 if ( data && data.code === '0'){
                     yield put({ type:'getSwitchList', payload:{ data:data.data, currentPage, total:data.count }});
                     // 当网关列表有修改时及时更新其他模块的网关树结构
                     if ( forceUpdate ){
-                        yield put({ type:'switchMach/fetchGateway', payload:{ forceUpdate:true }});
+                        yield put.resolve({ type:'switchMach/fetchGateway', payload:{ forceUpdate:true }});
+                        yield put({ type:'switchMach/fetchSwitchList'});
                     }
                 } 
             } catch(err){
@@ -101,31 +102,7 @@ export default {
         getSwitchModel(state, { payload:{ data }}){
             return { ...state, switchModel:data };
         },
-        updateGateway(state, { payload:{ multi, single }}){
-            let temp = state.gatewayList.concat();
-            if ( multi ){
-                temp.forEach(item=>{
-                    if ( item.key === state.currentGateway.key ) {  
-                        item.className = 'selected-parent';
-                    }
-                    item.disabled = false;
-                });
-            } else if ( single ){
-                temp.forEach(item=>{
-                    if( item.is_gateway ){
-                        item.disabled = true;
-                    }
-                    item.className='';
-                })
-            } else {
-                temp.forEach(item=>{
-                    item.className = '';
-                    item.disabled = false;
-                })
-            }
-            return { ...state, gatewayList:temp };
-        },
-    
+        
         reset(state){
             return initialState;
         }

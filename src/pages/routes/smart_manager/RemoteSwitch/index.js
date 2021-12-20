@@ -8,9 +8,8 @@ import TableContainer from './TableContainer';
 import SwitchList from './SwitchList';
 import CombineSwitch from './CombineSwitch';
 let btnMaps = {};
-function RemoteSwitch({ dispatch, user, switchMach, terminalMach, menu }){
-    let { gatewayList, gatewayLoading, currentGateway, switchList, currentSwitch, realtimeData, switchLoading, switchData, switchDataLoading, detailLoading, switchDetail, optionType, autoLoading, autoLoadSwitchList } = switchMach;
-    let { machLoading, machDetailInfo } = terminalMach;
+function RemoteSwitch({ dispatch, user, switchMach, controller, menu }){
+    let { gatewayList, gatewayLoading, currentGateway, switchList, currentSwitch, currentNode, realtimeData, switchLoading, switchData, switchDataLoading, detailLoading, switchDetail, optionType, autoLoading, autoLoadSwitchList } = switchMach;
     let [visible, setVisible] = useState(false);
     let [detailInfo, setDetailInfo] = useState({});
     useEffect(()=>{
@@ -20,10 +19,11 @@ function RemoteSwitch({ dispatch, user, switchMach, terminalMach, menu }){
     },[user.authorized]);
     useEffect(()=>{
         return ()=>{
-            dispatch({ type:'switch/toggleOptionType', payload:'1'});
+            dispatch({ type:'switchMach/toggleOptionType', payload:'1'});
             btnMaps = {};
         }
     },[])
+    
     if ( menu.child && menu.child.length ){
         menu.child.forEach(item=>{
             btnMaps[item.menu_code] = true;
@@ -40,7 +40,7 @@ function RemoteSwitch({ dispatch, user, switchMach, terminalMach, menu }){
                         null
                         :
                         <div className={style['card-title']}>
-                            <div>{`在线控制-${currentGateway.title || ''}`}</div>
+                            <div>{`当前网关-${currentGateway.title || ''}`}</div>
                             {
                                 autoLoading 
                                 ?
@@ -94,7 +94,7 @@ function RemoteSwitch({ dispatch, user, switchMach, terminalMach, menu }){
                                         ?
                                         <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
                                             new Promise((resolve, reject)=>{
-                                                message.info('同步中，无法操作设备，请稍后...');
+                                                message.info('网关重启中，请稍后...');
                                                 dispatch({ type:'switchMach/sync', payload:{ resolve, reject }})
                                             })
                                             .then(()=>{
@@ -155,6 +155,7 @@ function RemoteSwitch({ dispatch, user, switchMach, terminalMach, menu }){
                                 currentGateway={currentGateway} 
                                 btnMaps={btnMaps}  
                                 onSelectDetail={item=>setDetailInfo(item)}
+                                modelList={controller.switchList}
                             />
                             :
                             <div className={style['empty-text']}>还没有配置网关</div>
@@ -204,4 +205,4 @@ function RemoteSwitch({ dispatch, user, switchMach, terminalMach, menu }){
    
    
 }
-export default connect(({ user, switchMach, terminalMach }) => ({ user, switchMach, terminalMach }))(RemoteSwitch);
+export default connect(({ user, switchMach, controller }) => ({ user, switchMach, controller }))(RemoteSwitch);

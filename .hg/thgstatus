@@ -1,0 +1,8 @@
+m
+msrc/pages/components/Header
+msrc/pages/models
+msrc/pages/routes/smart_manager
+msrc/pages/routes/smart_manager/RemoteSwitch
+msrc/pages/routes/smart_manager/SwitchController
+msrc/pages/routes/system_manager/GatewayManager
+msrc/pages/routes/system_manager/SwitchManager

@@ -28,12 +28,7 @@ function AlarmCom({ msg }){
         // audio.addEventListener('play', ()=>{
         //     console.log('a');
         // })
-        setTimeout(()=>{
-            let audio = document.getElementById('my-audio');
-            console.log(audio);
-            console.log(audio.muted);
-            audio.muted = false;
-        },3000)
+       
         return ()=>{
             firstMsg = true;
             clearTimeout(alarmTimer);
@@ -71,7 +66,7 @@ function AlarmCom({ msg }){
                     history.push('/sw_warning');
                 }} />
             </Popover>
-            <video src="/alarm.mp4"  muted width="420" id="my-audio">
+            <video src="/alarm.mp4"  muted width="420" id="my-audio" style={{ position:'absolute', right:'0' }}>
             </video>
             {/* <video id='my-audio' src={AlarmSound} muted={true} autoPlay={true} loop={true} style={{ position:'absolute', left:'100%' }}></video> */}
             <IconFont style={{ fontSize:'1.2rem', margin:'0 10px'}} type={ muted ? 'iconsound-off' : 'iconsound'} onClick={()=>{

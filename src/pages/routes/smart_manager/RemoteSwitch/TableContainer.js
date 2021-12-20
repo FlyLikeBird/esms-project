@@ -7,10 +7,6 @@ import CustomDatePicker from '@/pages/components/CustomDatePicker';
 import StatusForm from './StatusForm';
 const { Option } = Select;
 
-let tableData = []
-for(var i=0;i<40;i++){
-    tableData.push({ order:i+1, line_name:'53939955', energy:'1356', temp:'45', ele:'359', vol:'3333', pf:'30' });
-}
 let buttonsGroup = [
     { option:'1', title:'节点数据' },
     { option:'2', title:'实时信息' },
@@ -43,26 +39,19 @@ function TableContainer({ dispatch, loading, data, realtimeData, optionType }){
         ];
         tableData = data;
     } else if ( optionType === '2'){
-        columns = [
-            {
-                title:'序号',
-                width:'60px',
-                render:(text,record,index)=>{
-                    return index + 1;
-                }
-            },
-            { title:'注册码', dataIndex:'register_code'},
-            { title:'时段', dataIndex:'time_type_name' },
-            { title:'电能(KWH)', dataIndex:'energy' },
-            { title:'温度(℃)', dataIndex:'temp' },
-            { title:'电流(A)', dataIndex:'current'},
-            { title:'电压(V)', dataIndex:'voltage' },
-            { title:'功率(KW)', dataIndex:'power' },
-            { title:'功率因素(cosΦ)', dataIndex:'PF' },
-            { title:'发生时间', dataIndex:'record_date'}
-        ];
+        columns=[
+            { title:'注册码', dataIndex:'register_code' },
+            { title:'电压(V)', dataIndex:'voltage' }, 
+            { title:'电流(A)', dataIndex:'current'}, 
+            { title:'功率(KW)', dataIndex:'power'}, 
+            { title:'功率因素(cosΦ)', dataIndex:'powerFactor'}, 
+            { title:'电能(KWH)', dataIndex:'energy'}, 
+            { title:'温度(℃)', dataIndex:'temp'}
+        ]
+        tableData = realtimeData;
     }
-    console.log(tableData);
+    // console.log(data);
+    // console.log(realtimeData);
     return (
         <div style={{ height:'100%', position:'relative' }}>
             {
@@ -78,16 +67,26 @@ function TableContainer({ dispatch, loading, data, realtimeData, optionType }){
                     {
                         buttonsGroup.map((item,index)=>(
                             <div className={item.option === optionType ? style['button-group-item'] + ' ' + style['selected'] : style['button-group-item']} key={index} onClick={()=>{
-                                dispatch({ type:'switchMach/toggleOptionType', payload:item.option });
-                                if ( item.option === '1'){
-                                    dispatch({ type:'switchMach/fetchSwitchData' });
-                                } else if ( item.option === '2'){
-                                    new Promise((resolve, reject)=>{
-                                        dispatch({ type:'switchMach/fetchRealtimeData', payload:{ resolve, reject }});
-                                    })
-                                    .then(()=>{})
-                                    .catch(msg=>message.error(msg));
+                                if ( optionType !== item.option ){
+                                    if ( item.option === '1'){
+                                        new Promise((resolve, reject)=>{
+                                            dispatch({ type:'switchMach/fetchSwitchData', payload:{ resolve, reject } });
+                                        })
+                                        .then(()=>{
+                                            dispatch({ type:'switchMach/toggleOptionType', payload:item.option });
+                                        })
+                                        .catch(msg=>message.error(msg))
+                                    } else if ( item.option === '2'){
+                                        new Promise((resolve, reject)=>{
+                                            dispatch({ type:'switchMach/fetchRealtimeData', payload:{ resolve, reject }});
+                                        })
+                                        .then(()=>{
+                                            dispatch({ type:'switchMach/toggleOptionType', payload:item.option });
+                                        })
+                                        .catch(msg=>message.error(msg));
+                                    }
                                 }
+                                
                             }}>{ item.title }</div>
                         ))
                     }
@@ -103,12 +102,9 @@ function TableContainer({ dispatch, loading, data, realtimeData, optionType }){
                 }
                 
             </div>
-            <div className={style['card-container']} style={{ height:'calc(100% - 50px)'}}>
-                {
-                    optionType === '1'
-                    ?
+            <div className={style['card-container']} style={{ height:'calc(100% - 50px)'}}>                
                     <Table 
-                        rowKey='record_date'
+                        rowKey={(r,i)=>i}
                         columns={columns}
                         dataSource={tableData}
                         className={style['self-table-container'] + ' ' + style['dark'] }
@@ -116,12 +112,7 @@ function TableContainer({ dispatch, loading, data, realtimeData, optionType }){
                         locale={{
                             emptyText:<div style={{ height:'140px', lineHeight:'140px' }}>暂无节点数据</div>
                         }}
-                    />
-                    :
-                    <StatusForm data={realtimeData} />
-                }
-                
-
+                    />                                                    
             </div>
             
         </div>

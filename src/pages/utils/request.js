@@ -25,6 +25,7 @@ function checkStatus(response) {
 export default function request(url, options, otherProxy) {
     let proxy = otherProxy || config.proxy;
     let finalURL = `http://${config.apiHost}${proxy}${url}`;
+    console.log(options);
     return fetch(finalURL, options)
         .then(checkStatus)
         .then(parseJSON)

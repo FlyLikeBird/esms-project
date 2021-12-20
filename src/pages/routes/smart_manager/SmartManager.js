@@ -20,7 +20,7 @@ let subMenuMaps = {
 };
 function SmartManager({ dispatch, user, switchMach }){
     let { currentMenu } = user;
-    let { gatewayList, gatewayLoading, currentGateway, currentSwitch, optionType } = switchMach;
+    let { gatewayList, gatewayLoading, currentGateway, currentNode, currentSwitch, optionType } = switchMach;
     const [subMenu, toggleSubMenu] = useState('');
     useEffect(()=>{
         if ( currentMenu.child && currentMenu.child.length ){
@@ -48,21 +48,77 @@ function SmartManager({ dispatch, user, switchMach }){
                     </Menu>
                 </div>
             </div>
+            {/* 远程控制菜单，可选择网关或者空开设备 */}
             {
-                subMenu.menu_code === 'sw_ctrl_remote' || subMenu.menu_code === 'sw_ctrl_trip'
+                subMenu.menu_code === 'sw_ctrl_remote' 
                 ?
                 <div className={style['card-container'] + ' ' + style['bottomRadius']} style={{ padding:'0', height:'auto', boxShadow:'none' }}>
                     <div className={style['card-title']}>
-                        <div>网关列表</div>
+                        <div>网关列表</div>                     
+                        <Button type='primary' size='small' style={{ fontSize:'0.8rem' }} onClick={()=>{
+                            history.push('/sw_system');
+                        }}>添加网关</Button>                   
+                    </div>
+                    <div className={style['card-content']}>
                         {
-                            subMenu.menu_code === 'sw_ctrl_remote' 
+                            gatewayLoading
                             ?
-                            <Button type='primary' size='small' style={{ fontSize:'0.8rem' }} onClick={()=>{
-                                history.push('/sw_system');
-                            }}>添加网关</Button>
+                            <Spin className={style['spin']} />
                             :
-                            null
+                            gatewayList.length 
+                            ?
+                            <Tree
+                                className={style['custom-tree']}
+                                defaultExpandAll={true}
+                                // expandedKeys={expandedKeys}
+                                // onExpand={temp=>{
+                                //     dispatch({ type:'fields/setExpandedKeys', payload:temp });
+                                // }}
+                                selectedKeys={[currentNode.key ]}
+                                treeData={gatewayList}
+                                onSelect={(selectedKeys, { node })=>{  
+                                        // 远程控制功能
+                                        dispatch({ type:'switchMach/toggleNode', payload:node });
+                                        if ( node.is_gateway ) {
+                                            // 如果是网关设备
+                                            if ( node.key !== currentGateway.key ){
+                                                dispatch({ type:'switchMach/toggleGateway', payload:node });
+                                                dispatch({ type:'switchMach/fetchSwitchList' });
+                                                
+                                            }                                            
+                                            if ( optionType === '1'){
+                                                dispatch({ type:'switchMach/fetchSwitchData'});
+                                            } else {
+                                                dispatch({ type:'switchMach/fetchRealtimeData'});
+                                            }                                                             
+                                        } else {
+                                            // 如果是空开设备，则更新空开设备所在的那组网关
+                                            let temp = gatewayList.filter(i=>i.key === node.gateway_id )[0];
+                                            if ( temp && temp.key !== currentGateway.key ){
+                                                dispatch({ type:'switchMach/toggleGateway', payload:temp, updateSwitch:node });
+                                                dispatch({ type:'switchMach/fetchSwitchList' });
+                                            } 
+                                            if ( optionType === '1'){
+                                                dispatch({ type:'switchMach/fetchSwitchData'});
+                                            } else if ( optionType === '2' ){
+                                                dispatch({ type:'switchMach/fetchRealtimeData'});
+                                            }
+                                                          
+                                        }                                                  
+                                }}
+                            />
+                            :
+                            <div>网关列表为空</div>
                         }
+                    </div>
+                </div>
+                :
+                // 参数设置菜单，只针对空开设备
+                subMenu.menu_code === 'sw_ctrl_trip'
+                ?
+                <div className={style['card-container'] + ' ' + style['bottomRadius']} style={{ padding:'0', height:'auto', boxShadow:'none' }}>
+                    <div className={style['card-title']}>
+                        <div>网关列表</div>                                    
                     </div>
                     <div className={style['card-content']}>
                         {
@@ -81,56 +137,21 @@ function SmartManager({ dispatch, user, switchMach }){
                                 // }}
                                 selectedKeys={[currentSwitch.key ]}
                                 treeData={gatewayList}
-                                onSelect={(selectedKeys, {node})=>{  
-                                    if ( subMenu.menu_code === 'sw_ctrl_remote' ) {
-                                        // 远程控制功能
-                                        if ( node.is_gateway ) {
-                                            // 如果是网关设备
-                                            if ( node.key !== currentGateway.key ){
-                                                dispatch({ type:'switchMach/toggleGateway', payload:node });
-                                                dispatch({ type:'switchMach/fetchSwitchList' });
-                                                if ( optionType === '1'){
-                                                    dispatch({ type:'switchMach/fetchSwitchData'});
-                                                } else {
-                                                    dispatch({ type:'switchMach/fetchRealtimeData'});
-                                                }
-                                            }                    
-                                        } else {
-                                            // 如果是空开设备，则更新空开设备所在的那组网关
-                                            if ( node.key !== currentSwitch.key ) {
-                                                let temp = gatewayList.filter(i=>i.key === node.gateway_id )[0];
-                                                if ( temp && temp.key !== currentGateway.key ){
-                                                    dispatch({ type:'switchMach/toggleGateway', payload:temp, updateSwitch:node });
-                                                    dispatch({ type:'switchMach/fetchSwitchList' });
-                                                } else {
-                                                    dispatch({ type:'switchMach/toggleSwitch', payload:node });
-                                                }
-                                                if ( optionType === '1'){
-                                                    dispatch({ type:'switchMach/fetchSwitchData'});
-                                                } else {
-                                                    dispatch({ type:'switchMach/fetchRealtimeData'});
-                                                }
-                                            }              
+                                onSelect={(selectedKeys, { node })=>{                                         
+                                    if ( node.key !== currentSwitch.key ){
+                                        dispatch({ type:'switchMach/toggleSwitch', payload:node });
+                                        if ( optionType === '1' ){
+                                            dispatch({ type:'switchMach/fetchTemp'});
+                                        } else if ( optionType === '2'){
+                                            dispatch({ type:'switchMach/fetchParams'});
+                                        } else if ( optionType === '3'){
+                                            dispatch({ type:'switchMach/fetchLimitEle'});
+                                        } else if ( optionType === '4'){
+                                            dispatch({ type:'switchMach/fetchAutoTrip'});
+                                        } else if ( optionType === '5'){
+                                            dispatch({ type:'switchMach/fetchAutoCombine'});
                                         }
-                                    } else if ( subMenu.menu_code === 'sw_ctrl_trip' ){
-                                        // 自动脱扣功能
-                                        if ( node.is_gateway ){
-                                            message.info('请选择网关下的空开设备');
-                                        } else {
-                                            dispatch({ type:'switchMach/toggleSwitch', payload:node });
-                                            if ( optionType === '1' ){
-                                                dispatch({ type:'switchMach/fetchTemp'});
-                                            } else if ( optionType === '2'){
-                                                dispatch({ type:'switchMach/fetchParams'});
-                                            } else if ( optionType === '3'){
-                                                dispatch({ type:'switchMach/fetchLimitEle'});
-                                            } else if ( optionType === '4'){
-                                                dispatch({ type:'switchMach/fetchAutoTrip'});
-                                            } else if ( optionType === '5'){
-                                                dispatch({ type:'switchMach/fetchAutoCombine'});
-                                            }
-                                        }                                    
-                                    }                   
+                                    }                                                                                                                                                                   
                                 }}
                             />
                             :
@@ -141,6 +162,7 @@ function SmartManager({ dispatch, user, switchMach }){
                 :
                 null
             }
+           
         </div>
         
     );

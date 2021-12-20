@@ -31,12 +31,15 @@ export default {
         },
         *fetchGateway(action, { put, call, select }){
             try {
-                let { user:{ company_id }, gateway:{ gatewayList }} = yield select();
-                let { data } = yield call(getGatewayList, { company_id });
+                let { user:{ company_id }} = yield select();
+                let { keyword, forceUpdate } = action.payload || {};
+                let { data } = yield call(getGatewayList, { company_id, keyword });
                 if ( data && data.code === '0'){
                     yield put({ type:'getGateway', payload:{ data:data.data }});
-                    // 当网关列表有修改时及时更新其他模块的网关树结构
-                    yield put({ type:'switchMach/fetchGateway', payload:{ forceUpdate:true }});
+                    if ( forceUpdate ){
+                        // 当网关列表有修改时及时更新其他模块的网关树结构
+                        yield put({ type:'switchMach/fetchGateway', payload:{ forceUpdate:true }});
+                    }
                 } 
             } catch(err){
                 console.log(err);
@@ -53,7 +56,7 @@ export default {
                 }      
                 let { data } = yield call( forEdit ? updateGateway : addGateway, params );
                 if ( data && data.code === '0'){
-                    yield put({ type:'fetchGateway' });
+                    yield put({ type:'fetchGateway', payload:{ forceUpdate:true } });
                     if ( resolve && typeof resolve === 'function' ) resolve();
                 } else {
                     if ( reject && typeof reject === 'function' ) reject(data.msg);
@@ -68,7 +71,7 @@ export default {
                 let { resolve, reject, mach_id } = action.payload || {};
                 let { data } = yield call(deleteGateway, { company_id, mach_id });
                 if ( data && data.code === '0'){
-                    yield put({ type:'fetchGateway' });
+                    yield put({ type:'fetchGateway', payload:{ forceUpdate:true } });
                     if ( resolve && typeof resolve === 'function' ) resolve();
                 } else {
                     if ( reject && typeof reject === 'function' ) reject(data.msg);

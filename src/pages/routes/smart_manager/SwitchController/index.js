@@ -11,19 +11,19 @@ import AutoCombineFormContainer from './AutoCombineFormContainer';
 const { TabPane } = Tabs;
 
 let tabList = [
-    { tab:'温控参数', key:'1'},
-    { tab:'空开控制参数', key:'2' },
-    { tab:'空开限制电流', key:'3'},
-    { tab:'自动脱扣参数', key:'4'},
-    { tab:'自动重合闸参数', key:'5'}
+    // { tab:'温控参数', key:'1'},
+    { tab:'空开控制参数', key:'1' },
+    { tab:'空开限制电流', key:'2'},
+    { tab:'自动脱扣参数', key:'3'},
+    { tab:'自动重合闸参数', key:'4'}
 ];
 
 let componentMaps = {
-    '1':<TempFormContainer />,
-    '2':<ControllerFormContainer />,
-    '3':<LimitEleFormContainer />,
-    '4':<AutoTripFormContainer />,
-    '5':<AutoCombineFormContainer />
+    // '1':<TempFormContainer />,
+    '1':<ControllerFormContainer />,
+    '2':<LimitEleFormContainer />,
+    '3':<AutoTripFormContainer />,
+    '4':<AutoCombineFormContainer />
 }
 
 function SwitchController({ dispatch, switchMach }){

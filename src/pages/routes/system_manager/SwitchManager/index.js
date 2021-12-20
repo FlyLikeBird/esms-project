@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { connect } from 'dva';
-import { Modal, Table, Button, Popconfirm, message } from 'antd';
+import { Modal, Table, Input, Select, Button, Popconfirm, message } from 'antd';
+import { SearchOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import style from '@/pages/routes/IndexPage.css';
 import AddForm from '../GatewayManager/AddForm';
+const { Option } = Select;
+
 function SwitchManager({ dispatch, user, switchMach, menu, controller, region }){
-    let { gatewayList } = switchMach;
+    let { gatewayList, currentGateway } = switchMach;
     let { managerList } = region;
     let { switchList, switchModel, currentPage, total } = controller;
     let [info, setInfo] = useState({ visible:false, forEdit:false, currentMach:null });
+    let [option, setOption] = useState('none');
+    let inputRef = useRef();
+    let selectOptions = [{ key:'none', title:'全部网关'}, ...gatewayList];
     useEffect(()=>{
         dispatch({ type:'controller/init' });
     },[]);
@@ -26,10 +32,10 @@ function SwitchManager({ dispatch, user, switchMach, menu, controller, region })
                 return `${ ( currentPage - 1) * 12 + index + 1}`;
             }
         },
+        { title:'所属网关', dataIndex:'gateway' },
         { title:'设备名', dataIndex:'meter_name' },
         { title:'注册码', dataIndex:'register_code' },
         { title:'设备类型', dataIndex:'model_desc' },
-        { title:'所属网关', dataIndex:'gateway' },
         { title:'责任人', dataIndex:'person_name' },
         { title:'排序值', dataIndex:'order_by' },
         // { title:'所属公司', dataIndex:'company_name' },
@@ -69,20 +75,38 @@ function SwitchManager({ dispatch, user, switchMach, menu, controller, region })
     
     return (
             <div className={style['card-container']}>
-                    {
-                        btnMaps['sw_meter_add'] 
-                        ?
-                        <div style={{ padding:'1rem'}}>
-                            <Button type="primary"  onClick={() => setInfo({ visible:true, forEdit:false }) }>添加设备</Button>                
-                        </div>
-                        :
-                        null
-                    }
+                    <div style={{ display:'flex', alignItems:'center', height:'50px', color:'#fff', padding:'1rem' }}>              
+                        <Select style={{ width:'280px', marginRight:'20px' }} className={style['custom-select']} value={option} onChange={value=>{
+                            setOption(value);
+                            dispatch({ type:'controller/fetchSwitchList', payload:{ gateway_id:value === 'none' ? '' : value } });
+                        }}>
+                            {
+                                selectOptions && selectOptions.length 
+                                ?
+                                selectOptions.map((item,index)=>(
+                                    <Option key={index} value={item.key}>{ item.title }</Option>
+                                ))
+                                :
+                                null
+                            }
+                        </Select>
+                        
+                        {
+                            btnMaps['sw_meter_add']
+                            ?
+                            <Button type="primary"  onClick={() => setInfo({ visible:true, forEdit:false }) }>添加设备</Button>
+                            :
+                            null
+                        }
+                       
+
+                    </div>
+                    
                     <Table
                         className={style['self-table-container'] + ' ' + style['dark'] }
                         columns={columns}
                         dataSource={switchList}
-                        locale={{emptyText:'还没有挂载任何设备'}}
+                        locale={{emptyText:'查询的设备数据为空'}}
                         bordered={true}
                         rowKey="mach_id"   
                         pagination={{
