@@ -36,7 +36,7 @@ const initialState = {
     switchData:[],
     switchDataLoading:true,
     // 空开实时数据
-    realtimeData:{},
+    realtimeData:[],
     // 批量操作，串行，执行完前一个获取结果再执行下一个，彼此状态独立
     optionType:'1',
     optionLoading:true,
@@ -211,7 +211,7 @@ export default {
                 let { data } = yield call(saveAutoLoadSwitch, { mach_id:currentGateway.key, machInfoList });
                 if ( data && data.code === '0'){
                     if ( resolve && typeof resolve === 'function') resolve();
-                    yield put({ type:'fetchGateway', payload:{ multi:true, forceUpdate:true } });
+                    yield put({ type:'fetchGateway', payload:{ forceUpdate:true } });
                     yield put({ type:'fetchSwitchList' });
                 } else {
                     if ( reject && typeof reject === 'function' ) reject(data.msg);
@@ -396,6 +396,10 @@ export default {
                 console.log(err);
             }
         },
+        *initLimitEle(action, { put }){
+            yield put.resolve({ type:'fetchGateway', payload:{ single:true }});
+            yield put({ type:'fetchLimitEle'});
+        },
         // 获取/设置空开限制电流
         *fetchLimitEle(action, { put, select, call}){
             try {
@@ -565,6 +569,26 @@ export default {
                 })
             }
             return { ...state, gatewayList:temp, currentGateway, currentNode:currentGateway, currentSwitch  };
+        },
+        // 修改设备名不重新请求，直接更新缓存数据
+        updateCache(state, { payload:{ mach_id, newValue }}){
+            let gatewayList = state.gatewayList.concat();
+            let switchList = state.switchList.concat();
+            gatewayList.forEach(gateway=>{
+                if ( gateway.children && gateway.children.length ){
+                    gateway.children.forEach(item=>{
+                        if ( item.key === mach_id ) {
+                            item.title = newValue;
+                        }
+                    })
+                }
+            });
+            switchList.forEach(item=>{
+                if ( item.mach_id === mach_id ) {
+                    item.meter_name = newValue;
+                }
+            });
+            return { ...state, gatewayList, switchList };
         },
         getSwitch(state, { payload:{ data }}){
             let { meterList, gatewayOnline } = data;

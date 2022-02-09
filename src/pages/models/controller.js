@@ -58,7 +58,7 @@ export default {
         },
         *add(action, { put, call, select }){
             try {
-                let { values, resolve, reject, forEdit } = action.payload || {};
+                let { values, resolve, reject, forceUpdate, forEdit } = action.payload || {};
                 let { gateway_id, meter_name, register_code, model_code, order_by, mach_id, person_id, switch_parent } = values;
                 let { user:{ company_id }} = yield select();  
                 let params = { company_id, meter_name, register_code, gateway_id, model_code, order_by, person_id, switch_parent };
@@ -67,7 +67,9 @@ export default {
                 }      
                 let { data } = yield call( forEdit ? updateSwitch : addSwitch, params );
                 if ( data && data.code === '0'){
-                    yield put({ type:'fetchSwitchList', payload:{ forceUpdate:true } });
+                    if ( forceUpdate ){
+                        yield put({ type:'fetchSwitchList', payload:{ forceUpdate:true } });
+                    }
                     if ( resolve && typeof resolve === 'function' ) resolve();
                 } else {
                     if ( reject && typeof reject === 'function' ) reject(data.msg);

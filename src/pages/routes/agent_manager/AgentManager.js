@@ -96,7 +96,7 @@ function AgentManager({ dispatch, user, gateway }){
                     </div>
                 </div>
                 {/* 实时告警 */}
-                <div className={style['float-item']} style={{ height:'28%'}}>
+                <div className={style['float-item']} style={{ height:'26%'}}>
                     <div className={style['float-item-title']}>
                         <span className={style['title']}>实时告警</span>
                         <span style={{ color:'#3294d7', fontSize:'0.8rem', cursor:'pointer' }} onClick={()=>{
@@ -114,7 +114,7 @@ function AgentManager({ dispatch, user, gateway }){
                     </div>
                 </div>
                 {/* 能耗趋势 */}
-                <div className={style['float-item']} style={{ height:'25%'}}>
+                <div className={style['float-item']} style={{ height:'26%'}}>
                     <div className={style['float-item-title']}>
                         <span className={style['title']}>近7日能耗趋势</span>
                     </div>
@@ -129,7 +129,7 @@ function AgentManager({ dispatch, user, gateway }){
                     </div>
                 </div>
                {/* 告警趋势 */}
-               <div className={style['float-item']} style={{ height:'25%' }}>
+               <div className={style['float-item']} style={{ height:'26%' }}>
                     <div className={style['float-item-title']}>
                         <span className={style['title']}>近7日告警趋势</span>
                     </div>
