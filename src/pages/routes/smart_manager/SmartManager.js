@@ -140,15 +140,15 @@ function SmartManager({ dispatch, user, switchMach }){
                                 onSelect={(selectedKeys, { node })=>{                                         
                                     if ( node.key !== currentSwitch.key ){
                                         dispatch({ type:'switchMach/toggleSwitch', payload:node });
-                                        if ( optionType === '1' ){
-                                            dispatch({ type:'switchMach/fetchTemp'});
-                                        } else if ( optionType === '2'){
-                                            dispatch({ type:'switchMach/fetchParams'});
-                                        } else if ( optionType === '3'){
+                                        // if ( optionType === '1' ){
+                                        //     dispatch({ type:'switchMach/fetchTemp'});
+                                        // } else \
+                                      
+                                        if ( optionType === '1'){
                                             dispatch({ type:'switchMach/fetchLimitEle'});
-                                        } else if ( optionType === '4'){
+                                        } else if ( optionType === '2'){
                                             dispatch({ type:'switchMach/fetchAutoTrip'});
-                                        } else if ( optionType === '5'){
+                                        } else if ( optionType === '3'){
                                             dispatch({ type:'switchMach/fetchAutoCombine'});
                                         }
                                     }                                                                                                                                                                   

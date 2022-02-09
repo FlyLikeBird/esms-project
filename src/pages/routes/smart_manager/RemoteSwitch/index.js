@@ -8,6 +8,7 @@ import TableContainer from './TableContainer';
 import SwitchList from './SwitchList';
 import CombineSwitch from './CombineSwitch';
 let btnMaps = {};
+
 function RemoteSwitch({ dispatch, user, switchMach, controller, menu }){
     let { gatewayList, gatewayLoading, currentGateway, switchList, currentSwitch, currentNode, realtimeData, switchLoading, switchData, switchDataLoading, detailLoading, switchDetail, optionType, autoLoading, autoLoadSwitchList } = switchMach;
     let [visible, setVisible] = useState(false);
@@ -53,14 +54,21 @@ function RemoteSwitch({ dispatch, user, switchMach, controller, menu }){
                                         .catch(msg=>message.error(msg))
                                     }}><ControlOutlined style={{ fontSize:'1.2rem' }}/>读取档案</div>
                                     <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
+                                        
                                         if ( finalSwitchList && finalSwitchList.length ){
                                             message.info('存档中，请稍后...');
                                             new Promise((resolve, reject)=>{
                                                 dispatch({ type:'switchMach/saveAutoLoad', payload:{ resolve, reject, machInfoList:finalSwitchList }});
                                             })
                                             .then(()=>{
-                                                message.success('存档成功,请稍后刷新', 5);
+                                                message.success('存档成功!设备重启中,请稍后等待刷新。', 5);
                                                 dispatch({ type:'switchMach/toggleAutoLoading', payload:false });
+                                                // 存档60秒后自动刷新设备状态
+                                                setTimeout(()=>{
+                                                    if ( dispatch && currentGateway.key ){
+                                                        dispatch({ type:'switchMach/refresh'});
+                                                    }
+                                                }, 60 * 1000)
                                             })
                                             .catch(msg=>message.error(msg));
                                         } else {
@@ -98,7 +106,7 @@ function RemoteSwitch({ dispatch, user, switchMach, controller, menu }){
                                                 dispatch({ type:'switchMach/sync', payload:{ resolve, reject }})
                                             })
                                             .then(()=>{
-                                                message.success('同步成功');
+                                                message.success('同步成功!');
                                             })
                                             .catch(msg=>message.error(msg))
                                         }}><CloudSyncOutlined style={{ fontSize:'1.2rem' }}/>同步</div>
@@ -111,6 +119,7 @@ function RemoteSwitch({ dispatch, user, switchMach, controller, menu }){
                                         currentGateway.key 
                                         ?
                                         <div className={style['custom-button'] + ' ' + style['small']} style={{ marginRight:'0.5rem' }} onClick={()=>{
+                                            
                                             new Promise((resolve, reject)=>{
                                                 dispatch({ type:'switchMach/fetchAutoLoad', payload:{ resolve, reject }});
                                             })
@@ -156,6 +165,7 @@ function RemoteSwitch({ dispatch, user, switchMach, controller, menu }){
                                 btnMaps={btnMaps}  
                                 onSelectDetail={item=>setDetailInfo(item)}
                                 modelList={controller.switchList}
+                                userName={user.userInfo.user_name}
                             />
                             :
                             <div className={style['empty-text']}>还没有配置网关</div>
@@ -164,7 +174,7 @@ function RemoteSwitch({ dispatch, user, switchMach, controller, menu }){
                 </div>
             </div>
             <div className={style['card-container-wrapper']} style={{ display:'block' ,height:'58%', paddingRight:'0', paddingBottom:'0' }}>
-                <div className={style['card-container']}>                                  
+                <div className={style['card-container']}>                                 
                     <TableContainer dispatch={dispatch} data={switchData} loading={switchDataLoading} realtimeData={realtimeData} optionType={optionType} />                 
                 </div>
             </div>
@@ -198,7 +208,7 @@ function RemoteSwitch({ dispatch, user, switchMach, controller, menu }){
                 title='空开批量控制'
                 footer={null}
             >
-                <CombineSwitch dispatch={dispatch} switchList={switchList} onClose={()=>setVisible(false)} />
+                <CombineSwitch dispatch={dispatch} switchList={switchList} onClose={()=>setVisible(false)} userName={user.userInfo.user_name} />
             </Modal>
         </div>
     )   

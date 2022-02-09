@@ -28,8 +28,8 @@ function SwitchItem({ dispatch, item,  modelList }){
                 Object.keys(editing).length 
                 ?
                 <div>
-                    <Input ref={inputRef} style={{ width:'120px'  }} value={value} onChange={e=>setValue(e.target.value) } onClick={e=>e.stopPropagation()} onBlur/>
-                    <div style={{ textAlign:'center' }}>
+                    <Input ref={inputRef} style={{ width:'120px'  }} value={value} onChange={e=>setValue(e.target.value) } onClick={e=>e.stopPropagation()} />
+                    <div style={{ textAlign:'center', margin:'0.5rem 0' }}>
                         <Button size='small' type='primary' style={{ marginRight:'6px'}} onClick={e=>{
                             e.stopPropagation();
                             if ( value ){
@@ -40,6 +40,8 @@ function SwitchItem({ dispatch, item,  modelList }){
                                 })
                                 .then(()=>{
                                     message.success('修改设备名成功');
+                                    // 更新缓存的网关树结构
+                                    dispatch({ type:'switchMach/updateCache', payload:{ mach_id:item.mach_id, newValue:value }});
                                     setEditing({});
                                 })
                                 .catch(msg=>message.error(msg));

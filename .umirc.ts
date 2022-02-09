@@ -23,7 +23,7 @@ export default defineConfig({
       hash:true,
     routes: [
         { path:'/login', component:'@/pages/routes/login_page'},
-        { path:'/pdf-viewer', component:'@/pages/routes/login_page/PDFViewer'},
+        // { path:'/pdf-viewer', component:'@/pages/routes/login_page/PDFViewer'},
         // { path:'/login', component:'@/pages/routes/Test3'},
         { 
             path:'/', 
@@ -38,8 +38,8 @@ export default defineConfig({
                 { path:'/data_report', component:'@/pages/routes/data_report' },
                 { path:'/sw_system', component:'@/pages/routes/system_manager'},
                 { path:'/map_test', component:'@/pages/routes/BuildingLayer'},
-                { path:'/topology_test', component:'@/pages/routes/Topology'},
-                { path:'img_ceshi', component:'@/pages/routes/Test2'}
+                // { path:'/topology_test', component:'@/pages/routes/Topology'},
+                // { path:'img_ceshi', component:'@/pages/routes/Test2'}
             ]
         }
     ],

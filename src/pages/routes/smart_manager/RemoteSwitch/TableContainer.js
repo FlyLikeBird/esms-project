@@ -18,6 +18,7 @@ let buttonsGroup = [
 function TableContainer({ dispatch, loading, data, realtimeData, optionType }){
     let columns = [];
     let tableData = [];
+    
     if ( optionType === '1'){
         columns = [
             {
@@ -44,7 +45,7 @@ function TableContainer({ dispatch, loading, data, realtimeData, optionType }){
             { title:'电压(V)', dataIndex:'voltage' }, 
             { title:'电流(A)', dataIndex:'current'}, 
             { title:'功率(KW)', dataIndex:'power'}, 
-            { title:'功率因素(cosΦ)', dataIndex:'powerFactor'}, 
+            { title:'功率因素(cosΦ)', dataIndex:'powerfactor'}, 
             { title:'电能(KWH)', dataIndex:'energy'}, 
             { title:'温度(℃)', dataIndex:'temp'}
         ]

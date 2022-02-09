@@ -2,3 +2,9 @@
     height:100%;
 }
 
+
+:global(.ant-notification) :global(.custom-info){
+    width:600px;
+    height:300px;
+    
+}

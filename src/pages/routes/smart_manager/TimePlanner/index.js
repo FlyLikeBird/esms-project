@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
-import { Menu, Button } from 'antd';
+import { Menu, Button, Select, TimePicker } from 'antd';
 import { PlusOutlined, CalendarOutlined, EllipsisOutlined } from '@ant-design/icons';
 import style from '@/pages/routes/IndexPage.css';
 import InnerStyle from './AddPlanForm.css';
 import TableContainer from './TableContainer';
-// import PlanList from './PlanList';
+import zhCN from 'antd/es/date-picker/locale/zh_CN';
+import moment from 'moment';
 
 function TimePlanner({ dispatch, switchMach, menu }){
     let { gatewayList, switchList, taskLoading, taskList, total, currentPage } = switchMach;
@@ -21,6 +22,7 @@ function TimePlanner({ dispatch, switchMach, menu }){
             btnMaps[item.menu_code] = true;
         })
     }
+    
     return (
         <div>
             <div className={style['card-container']}>

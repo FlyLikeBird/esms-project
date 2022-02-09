@@ -27,20 +27,21 @@ function LoginPage({ dispatch, user }) {
     function onDocumentLoadSuccess({ numPages }) {
         setNumPages(numPages);    
     }
-    useEffect(()=>{
-        fetch('/openapi.pdf')
-        .then(response=>{
-            return response.blob();
-        })
-        .then(blob=>{
-            var reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onload = ()=>{            
-                setDataURL(reader.result);
-            }
-        })
-        .catch(err => ({ err }));
-    },[])
+    // useEffect(()=>{
+    //     fetch('https://api.h1dt.com/static/pdf/openapi.pdf')
+    //     .then(response=>{
+    //         return response.blob();
+    //     })
+    //     .then(blob=>{
+    //         // console.log(blob);
+    //         var reader = new FileReader();
+    //         reader.readAsDataURL(blob);
+    //         reader.onload = ()=>{            
+    //             setDataURL(reader.result);
+    //         }
+    //     })
+    //     .catch(err => ({ err }));
+    // },[])
     return (        
         localStorage.getItem('user_id') && location.pathname === '/login'
         ?
@@ -50,26 +51,7 @@ function LoginPage({ dispatch, user }) {
             {/* <div className={style['logo-container']}>
                 <img src={Object.keys(thirdAgent).length ? thirdAgent.logo_path : ''} style={{ marginRight:'20px' }} />
             </div> */}
-            <div style={{ position:'fixed', right:'1rem', top:'1rem', zIndex:'2' }} onClick={()=>{
-                if ( dataURL ){
-                    let linkBtn = document.createElement('a');
-                    linkBtn.download = '开发api.pdf' ;          
-                    linkBtn.href = dataURL;
-                    let event;
-                    if( window.MouseEvent) {
-                        event = new MouseEvent('click');
-                    } else {
-                        event = document.createEvent('MouseEvents');
-                        event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-                    }
-                    linkBtn.dispatchEvent(event);
-                } else {
-                    message.info('文件还在加载，请稍后再点击下载');
-                }
-            }}>
-                <FilePdfOutlined style={{ color:'#fff' }} />
-                <a style={{ color:'#fff'}}>开放api</a>
-            </div>
+            
             <div className={style['title-container']}>智慧空开监控系统</div>
             <div className={style['login-container']}>
                 <div className={style['img-container']} style={{ backgroundImage:`url(${switchBg})`}}><img src={switchImg} style={{ width:'60%', marginLeft:'50px', marginTop:'50px'}} /></div>
@@ -106,6 +88,30 @@ function LoginPage({ dispatch, user }) {
                             }}>登录</Button>
                         </Form.Item>
                     </Form>
+                    {/* <div style={{ textAlign:'center' }} onClick={()=>{
+                        if ( dataURL ){
+                            let linkBtn = document.createElement('a');
+                            linkBtn.download = '开发api.pdf' ;          
+                            linkBtn.href = dataURL;
+                            let event;
+                            if( window.MouseEvent) {
+                                event = new MouseEvent('click');
+                            } else {
+                                event = document.createEvent('MouseEvents');
+                                event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                            }
+                            linkBtn.dispatchEvent(event);
+                        } else {
+                            message.info('文件还在加载，请稍后再点击下载');
+                        }
+                    }}>
+                        <FilePdfOutlined style={{ color:'#1890ff' }} />
+                        <a style={{ color:'#1890ff'}}>开放api</a>
+                    </div> */}
+                    <div style={{ textAlign:'center' }}>
+                        <FilePdfOutlined style={{ color:'#1890ff' }} /><a href='https://api.h1dt.com/static/pdf/openapi.pdf' target='_blank' style={{ color:'#1890ff'}}>开放api</a>
+                    </div>
+
                 </div>
                 
                 {/* <div style={{ textAlign:'center' }}><a onClick={()=>setVisible(true)} style={{ marginRight:'1rem' }}>开放api.pdf</a><a style={{ marginRight:'1rem' }} onClick={()=>setVisible(true)}>查看</a><a style={{ marginRight:'1rem' }} onClick={()=>{

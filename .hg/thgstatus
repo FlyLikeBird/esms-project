@@ -1,8 +1,15 @@
 m
+msrc
+msrc/.umi/core
+msrc/pages/components/ActionConfirm
 msrc/pages/components/Header
 msrc/pages/models
+msrc/pages/routes
+msrc/pages/routes/agent_manager
+msrc/pages/routes/login_page
 msrc/pages/routes/smart_manager
 msrc/pages/routes/smart_manager/RemoteSwitch
 msrc/pages/routes/smart_manager/SwitchController
+msrc/pages/routes/smart_manager/TimePlanner
 msrc/pages/routes/system_manager/GatewayManager
-msrc/pages/routes/system_manager/SwitchManager
+msrc/pages/utils

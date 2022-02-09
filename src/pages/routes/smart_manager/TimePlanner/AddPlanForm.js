@@ -26,12 +26,29 @@ let weeksMap = {
     6:'周六',
     7:'周日',
 }
-
-function getDeepValue(node, result){
+let hourData = [], minData = [], secondData = [];
+for(var i=0;i<24;i++){
+    hourData.push(i < 10 ? '0' + i : i + '');
+}
+for(var i=0;i<60;i++){
+    minData.push( i < 10 ? '0' + i : i + '');
+}
+for(var i=0;i<60;i++){
+    secondData.push(i < 10 ? '0' + i : i + '');
+}
+function getDeepValue(node, result, taskType){
     if ( node.children && node.children.length ){
         node.children.forEach(item=>{
-            result.push({ title:item.title, key:item.key });
-            getDeepValue(item, result);
+            if ( taskType === '3' ){
+                // 漏保任务
+                if ( item.switch_type === 2 ) {
+                    result.push({ title:item.title, key:item.key });
+                }
+            } else if ( taskType === '1') {
+                // 空开任务              
+                result.push({ title:item.title, key:item.key });          
+            }
+            getDeepValue(item, result, taskType);
         })
     }
 }
@@ -60,11 +77,14 @@ function AddPlanForm({ info, gatewayList, taskType, onDispatch, onClose }){
     let [form] = Form.useForm();
     let [currentDate, setCurrentDate] = useState(moment(new Date()));
     let [weekData, setWeekData] = useState([]);
+    // let [hour, setHour] = useState('00');
+    // let [min, setMin] = useState('00');
+    // let [second, setSecond] = useState('00');
     useEffect(()=>{
         if ( info.forEdit ){
             // 设置初始值
             form.setFieldsValue({
-                task_type:info.taskInfo ? info.taskInfo.task_type : '',
+                task_type:info.taskInfo ? info.taskInfo.task_type === 1 ? '空开任务' : info.taskInfo.task_type === 3 ? '漏保任务' : '' : '',
                 task_name:info.taskInfo ? info.taskInfo.task_name : '',
                 gateway_id : info.taskInfo ? info.taskInfo.gateway_id : null,
                 switch_action:info.taskInfo ? info.taskInfo.switch_action : null,
@@ -93,7 +113,7 @@ function AddPlanForm({ info, gatewayList, taskType, onDispatch, onClose }){
            
         } else {
             form.setFieldsValue({
-                task_type:taskType,     
+                task_type:taskType === '1' ? '空开任务' : taskType === '3' ? '漏保任务' : '',     
                 repeat_type:1,
                 gateway_id:gatewayList.length ? gatewayList[0].key : null,
                 time:moment(new Date(), 'HH:mm:ss')
@@ -107,10 +127,9 @@ function AddPlanForm({ info, gatewayList, taskType, onDispatch, onClose }){
             }
         }
     },[]);
+   
     return (
        <Form form={form} layout='horizontal' className={style['form-container']} onFinish={values=>{
-            // console.log(values);
-            // console.log(values.time.format('HH:mm:ss'));
             // console.log(currentDate.format('YYYY-MM-DD'));
             let exec_date, time = values.time.format('HH:mm:ss');
             // 重复类型为周，确保选中周几
@@ -128,6 +147,7 @@ function AddPlanForm({ info, gatewayList, taskType, onDispatch, onClose }){
                 exec_date = currentDate.format('YYYY-MM-DD') + ' ' + time;
             }
             values.exec_date = exec_date;
+            values.task_type = taskType;
             if ( info.forEdit ){
                 values.task_id = info.taskInfo.task_id;
             }
@@ -146,11 +166,8 @@ function AddPlanForm({ info, gatewayList, taskType, onDispatch, onClose }){
             <Row gutter={24}>
                 <Col span={12}>
                     <Form.Item label='任务类型' name='task_type' rules={[{ required:true, message:'信息不能为空' }]}>
-                        <Select>
-                            <Option value='1'>空开任务</Option>
-                            {/* <Option value='2'>空调</Option> */}
-                            <Option value='3'>漏保任务</Option>
-                        </Select>
+                        <Input disabled style={{ color:'rgba(0, 0, 0, 0.85)' }} />
+                        
                     </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -188,7 +205,7 @@ function AddPlanForm({ info, gatewayList, taskType, onDispatch, onClose }){
                                 let temp = gatewayList.filter(i=>i.key === getFieldValue('gateway_id'))[0];
                                 let result = [];
                                 if ( temp ){
-                                    getDeepValue(temp, result);
+                                    getDeepValue(temp, result, taskType);
                                 }
                                 return (                                                                 
                                     <Form.Item name='mach_ids' >
@@ -344,6 +361,33 @@ function AddPlanForm({ info, gatewayList, taskType, onDispatch, onClose }){
                             </div>
                         )}/>
                     </Form.Item>
+                    {/* <Form.Item label='执行时间' name='time' rules={[ { required:true, message:'请选择执行时间'}]}>
+                        <div>
+                            <Select style={{ width:'80px'}} value={hour}>
+                                {
+                                    hourData.map((item,index)=>(
+                                        <Option key={item}>{ item }</Option>
+                                    ))
+                                }
+                            </Select>
+                            <span style={{ color:'#fff', margin:'0 6px'}}>:</span>
+                            <Select style={{ width:'80px'}} value={min}>
+                                {
+                                    minData.map((item,index)=>(
+                                        <Option key={item}>{ item }</Option>
+                                    ))
+                                }
+                            </Select>
+                            <span style={{ color:'#fff', margin:'0 6px'}}>:</span>
+                            <Select style={{ width:'80px'}} value={second}>
+                                {
+                                    secondData.map((item,index)=>(
+                                        <Option key={item}>{ item }</Option>
+                                    ))
+                                }
+                            </Select>
+                        </div>
+                    </Form.Item> */}
                 </Col>
             </Row>
             <Form.Item { ...tailLayout} >

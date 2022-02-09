@@ -3,7 +3,7 @@ import { Tag, Modal, Button, Input, Tooltip, Spin, message } from 'antd';
 import moment from 'moment';
 import style from './RemoteSwitch.css';
 import IndexStyle from '@/pages/routes/IndexPage.css';
-import { BarChartOutlined, SettingOutlined } from '@ant-design/icons';
+import { BarChartOutlined, SettingOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import SyncProgress from './SyncProgress';
 import ActionConfirm from '@/pages/components/ActionConfirm';
 import SwitchItem from './SwitchItem';
@@ -46,13 +46,12 @@ let canDrag = false,
     moveX = 0, moveY = 0;
 // 空开尺寸 100 * 240 漏保尺寸 120 * 240
 
-function SwitchList({ dispatch, data, currentGateway, btnMaps, onSelectDetail, modelList }){
+function SwitchList({ dispatch, data, currentGateway, btnMaps, onSelectDetail, modelList, userName }){
     const containerRef = useRef();
     let inputRef = useRef();
     let [currentMach, setCurrentMach] = useState({});
     let [visible, setVisible] = useState(false);
     let [actionVisible, setActionVisible] = useState(false);
-    
     let [machList, setMachList] = useState([{ is_gateway:true, gateway_id:currentGateway.key },...data]);
     let [checkLoading, setCheckLoading] = useState(false);
     useEffect(()=>{
@@ -215,17 +214,22 @@ function SwitchList({ dispatch, data, currentGateway, btnMaps, onSelectDetail, m
                     ))
                 }
             </div>
-            
-            <ActionConfirm visible={actionVisible} onClose={()=>setActionVisible(false)} onDispatch={()=>{
-                setCurrentMach({});
-                new Promise((resolve, reject)=>{
-                    dispatch({ type: currentMach.switch_status === 0 ? 'switchMach/fetchTurnOn' : 'switchMach/fetchTurnOff', payload:{ resolve, reject, mach_id:currentMach.mach_id }})
-                })
-                .then(()=>{
-                    message.success(`${currentMach.switch_status === 0 ? '合闸' : '分断'}成功`);
-                })
-                .catch(msg=>message.info(msg))
-            }} />
+            {
+                actionVisible 
+                ?
+                <ActionConfirm visible={actionVisible} userName={userName} actionType={currentMach.switch_status === 0 ? '合闸' : '分断'} onClose={()=>setActionVisible(false)} onDispatch={()=>{
+                    setCurrentMach({});
+                    new Promise((resolve, reject)=>{
+                        dispatch({ type: currentMach.switch_status === 0 ? 'switchMach/fetchTurnOn' : 'switchMach/fetchTurnOff', payload:{ resolve, reject, mach_id:currentMach.mach_id }})
+                    })
+                    .then(()=>{
+                        message.success(`${currentMach.switch_status === 0 ? '合闸' : '分断'}成功`);
+                    })
+                    .catch(msg=>message.info(msg))
+                }} />
+                :
+                null
+            }
             {/* 空开开合闸控制 */}
             <Modal
                 width='400px'
@@ -237,16 +241,17 @@ function SwitchList({ dispatch, data, currentGateway, btnMaps, onSelectDetail, m
                 onCancel={()=>setCurrentMach({})}
             >
                 <div>
+                    
                     <div style={{ margin:'10px 0', display:'flex', justifyContent:'space-between' }}>
                         <span>线路名称:</span>
                         <span>{ currentMach.meter_name }</span>
-                    </div>
-                    <div style={{ margin:'10px 0', display:'flex', justifyContent:'space-between' }}>
+                    </div>               
+                    <div style={{ margin:'10px 0', display:'flex', justifyContent:'space-between' }} >
                         <span>{`${switchTypesMap[currentMach.switch_type]}状态`}</span>
                         <span className={ currentMach.switch_status === 1 ? style['tag-on'] : style['tag-off']} >
                             <span>{ statusMap[currentMach.switch_status] }</span>
                         </span>
-                    </div>
+                    </div>                                      
                     <div style={{ textAlign:'center', margin:'20px 0' }}>
                         <span style={{ display:'inline-block', verticalAlign:'top', fontWeight:'bold', cursor:'pointer', margin:'0 10px', width:'100px', height:'40px', lineHeight:'40px', backgroundColor: currentMach.switch_status === 0 ? 'rgb(24 173 20)' : '#ff2d2e' }} onClick={()=>{
                             setActionVisible(true);
@@ -273,3 +278,4 @@ function areEqual(prevProps, nextProps){
     }
 }
 export default React.memo(SwitchList, areEqual);
+

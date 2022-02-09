@@ -12,23 +12,27 @@ const { TabPane } = Tabs;
 
 let tabList = [
     // { tab:'温控参数', key:'1'},
-    { tab:'空开控制参数', key:'1' },
-    { tab:'空开限制电流', key:'2'},
-    { tab:'自动脱扣参数', key:'3'},
-    { tab:'自动重合闸参数', key:'4'}
+    // { tab:'空开控制参数', key:'1' },
+    { tab:'空开限制电流', key:'1'},
+    { tab:'自动脱扣参数', key:'2'},
+    { tab:'自动重合闸参数', key:'3'}
 ];
 
 let componentMaps = {
     // '1':<TempFormContainer />,
-    '1':<ControllerFormContainer />,
-    '2':<LimitEleFormContainer />,
-    '3':<AutoTripFormContainer />,
-    '4':<AutoCombineFormContainer />
+    // '1':<ControllerFormContainer />,
+    '1':<LimitEleFormContainer />,
+    '2':<AutoTripFormContainer />,
+    '3':<AutoCombineFormContainer />
 }
 
 function SwitchController({ dispatch, switchMach }){
     let { gatewayList, gatewayLoading, currentGateway, switchList, switchLoading, currentSwitch, optionType, optionLoading } = switchMach;
-   
+    useEffect(()=>{
+        return ()=>{
+            dispatch({ type:'switchMach/toggleOptionType', payload:'1'});
+        }
+    },[])
     return (
         <div className={style['card-container']}>
             {

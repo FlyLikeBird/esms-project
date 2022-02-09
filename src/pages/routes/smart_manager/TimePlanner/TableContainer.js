@@ -34,7 +34,6 @@ let pushStatusMaps = {
 function TableContainer({ dispatch, gatewayList, switchList, data, taskLoading, total, currentPage, btnMaps }){
     let [addVisible, toggleAddVisible] = useState(false);
     let [dispatchVisible, toggleDispatchVisible] = useState(false);
-    let [actionVisible, setActionVisible]  = useState(false);
     let [info, setInfo] = useState({ visible:false, forEdit:false, taskInfo:null });
     let [taskType, setTaskType] = useState('1');
     let [value, setValue] = useState('');
@@ -92,8 +91,14 @@ function TableContainer({ dispatch, gatewayList, switchList, data, taskLoading, 
                         btnMaps['sw_task_send']
                         ?
                         <Button style={{ fontSize:'0.8rem', marginRight:'6px'}} type='primary' size='small' onClick={()=>{
-                            setInfo({ visible:false, forEdit:false, taskInfo:row });
-                            setActionVisible(true);
+                            new Promise((resolve, reject)=>{
+                                dispatch({ type:'switchMach/pushTask', payload:{ resolve, reject, task_id:row.task_id, task_type:taskType } })
+                            })
+                            .then(()=>{
+                                message.success('下发任务成功!');
+                                
+                            })
+                            .catch(msg=>message.error(msg));
                         }}>下发</Button>
                         // <span style={{ color:'#1890ff', marginRight:'1rem', cursor:'pointer' }} onClick={()=>{
                         //     setInfo({ visible:false, forEdit:false, taskInfo:row });
@@ -132,22 +137,7 @@ function TableContainer({ dispatch, gatewayList, switchList, data, taskLoading, 
                         >
                             <Button style={{ fontSize:'0.8rem', marginRight:'6px'}} type='primary' size='small' >删除</Button>
                         </Popconfirm>
-                        
-                        // <Popconfirm
-                        //     title='确定删除此条任务吗'
-                        //     onConfirm={()=>{
-                        //         new Promise((resolve, reject)=>{
-                        //             dispatch({ type:'switchMach/fetchDelTask', payload:{ task_id:row.task_id, resolve, reject }})
-                        //         })
-                        //         .catch(msg=>{
-                        //             message.info(msg);
-                        //         })
-                        //     }}
-                        //     okText="确定"
-                        //     cancelText="取消"
-                        // >
-                        //     <DeleteOutlined style={{ color:'#ff2d2e', fontSize:'1.2rem', margin:'0 6px' }} />
-                        // </Popconfirm>
+                       
                         :
                         null
                     }
@@ -165,17 +155,17 @@ function TableContainer({ dispatch, gatewayList, switchList, data, taskLoading, 
                 :
                 null
             }
-            <ActionConfirm visible={actionVisible} onClose={()=>setActionVisible(false)} onDispatch={()=>{
-                new Promise((resolve, reject)=>{
-                    dispatch({ type:'switchMach/pushTask', payload:{ resolve, reject, task_id:info.taskInfo.task_id, task_type:taskType } })
-                })
-                .then(()=>{
-                    message.success('下发任务成功!');
-                    
-                })
-                .catch(msg=>message.error(msg));
-            }} />
-            <div style={{ display:'flex', alignItems:'center', height:'50px', color:'#fff', padding:'1rem' }}>
+            <div className={style['button-group-container']} style={{ marginBottom:'1rem' }}>
+                {
+                    tasks.map(item=>(
+                        <div key={item.key} className={ item.key === taskType ? style['button-group-item'] + ' ' + style['selected'] : style['button-group-item']} onClick={()=>{
+                            dispatch({ type:'switchMach/fetchTaskList', payload:{ task_type:item.key, task_name:value }});
+                            setTaskType(item.key);
+                        }}>{ item.title }</div>
+                    ))
+                }
+            </div>
+            <div style={{ display:'flex', alignItems:'center', height:'40px', color:'#fff', padding:'0 1rem' }}>
                 {/* <span style={{ color:'#03a4fe' }}>重复类型:</span>
                 <Select className={style['custom-select']} style={{ width:'100px', margin:'0 20px 0 6px' }} value='1'>
                     <Option value='1'>全部</Option>
@@ -201,17 +191,8 @@ function TableContainer({ dispatch, gatewayList, switchList, data, taskLoading, 
                 <div className={style['custom-button']} onClick={()=>toggleDispatchVisible(true)}><CalendarOutlined />任务下发</div> */}
                 
             </div>
-            <div style={{ height:'calc(100% - 50px)'}}>
-                <div className={style['button-group-container']}>
-                    {
-                        tasks.map(item=>(
-                            <div key={item.key} className={ item.key === taskType ? style['button-group-item'] + ' ' + style['selected'] : style['button-group-item']} onClick={()=>{
-                                dispatch({ type:'switchMach/fetchTaskList', payload:{ task_type:item.key, task_name:value }});
-                                setTaskType(item.key);
-                            }}>{ item.title }</div>
-                        ))
-                    }
-                </div>
+            <div style={{ height:'calc(100% - 90px)'}}>
+                
                 <Table 
                     rowKey='task_id'
                     columns={columns}

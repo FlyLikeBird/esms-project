@@ -34,27 +34,24 @@ function doPromiseArray(array, action, dispatch){
       });                            
     return sequence;
 }
-function CombineSwitch({ switchList, dispatch, onClose }){
+function CombineSwitch({ switchList, userName, dispatch, onClose }){
     let [form] = Form.useForm();
     let [visibleInfo, setVisibleInfo] = useState({ visible:false, action:''});
     return (
         <div>
-            <ActionConfirm visible={visibleInfo.visible} onClose={()=>setVisibleInfo({ visible:false, action:''})} onDispatch={()=>{
+            <ActionConfirm visible={visibleInfo.visible} userName={userName} actionType={visibleInfo.action === 'trip' ? '分断' : '合闸'} onClose={()=>setVisibleInfo({ visible:false, action:''})} onDispatch={()=>{
                 form.validateFields()
                 .then(values=>{
-                    if ( values.mach_ids && values.mach_ids.length ){
-                        onClose();
-                        doPromiseArray(values.mach_ids, visibleInfo.action, dispatch)
-                        .then(()=>{
-                            dispatch({ type:'switchMach/fetchSwitchList'});
-                        })
-                        .catch(msg=>{
-                            message.info(msg);
-                            dispatch({ type:'switchMach/fetchSwitchList'});
-                        })
-                    } else {
-                        message.info('请先选中设备');
-                    }
+                    onClose();
+                    doPromiseArray(values.mach_ids, visibleInfo.action, dispatch)
+                    .then(()=>{
+                        dispatch({ type:'switchMach/fetchSwitchList'});
+                    })
+                    .catch(msg=>{
+                        message.error(msg);
+                        dispatch({ type:'switchMach/fetchSwitchList'});
+                    })
+                    
                 })
             }} />
             <Form form={form} name='combine' {...formItemLayout} >
@@ -88,46 +85,27 @@ function CombineSwitch({ switchList, dispatch, onClose }){
                     </Checkbox.Group>
                 </Form.Item>
                 <Form.Item wrapperCol={{ span: 12, offset: 6 }}>
-                    <div type="primary" style={{ ...btnStyle, backgroundColor:'rgb(24 173 20)' }} onClick={()=>{
-                        setVisibleInfo({ visible:true, action:'combine'})
-                        // form.validateFields()
-                        // .then(values=>{
-                        //     if ( values.mach_ids && values.mach_ids.length ){
-                        //         onClose();
-                        //         doPromiseArray(values.mach_ids, 'combine', dispatch)
-                        //         .then(()=>{
-                        //             dispatch({ type:'switchMach/fetchSwitchList'});
-                        //         })
-                        //         .catch(msg=>{
-                        //             message.info(msg);
-                        //             dispatch({ type:'switchMach/fetchSwitchList'});
-                        //         })
-                        //     } else {
-                        //         message.info('请先选中设备');
-                        //     }
-                        // })
+                    <div type="primary" style={{ ...btnStyle, backgroundColor:'rgb(24 173 20)' }} onClick={()=>{            
+                        form.validateFields()
+                        .then(values=>{
+                            if ( values.mach_ids && values.mach_ids.length ){
+                                setVisibleInfo({ visible:true, action:'combine'})
+                            } else {
+                                message.info('请先选中设备');
+                            }
+                        })
                     }}>
                        合闸
                     </div>
                     <div type='primary' style={{ ...btnStyle, backgroundColor:'#ff2d2e'}} onClick={()=>{
-                        setVisibleInfo({ visible:true, action:'trip'})
-
-                        // form.validateFields()
-                        // .then(values=>{
-                        //     if ( values.mach_ids && values.mach_ids.length ){
-                        //         onClose();
-                        //         doPromiseArray(values.mach_ids, 'trip', dispatch)
-                        //         .then(()=>{
-                        //             dispatch({ type:'switchMach/fetchSwitchList'});
-                        //         })
-                        //         .catch(msg=>{
-                        //             message.info(msg);
-                        //             dispatch({ type:'switchMach/fetchSwitchList'});
-                        //         })
-                        //     } else {
-                        //         message.info('请先选中设备');
-                        //     }
-                        // })
+                        form.validateFields()
+                        .then(values=>{
+                            if ( values.mach_ids && values.mach_ids.length ){
+                                setVisibleInfo({ visible:true, action:'trip'})
+                            } else {
+                                message.info('请先选中设备');
+                            }
+                        })
                     }}>分断</div>
                 </Form.Item>
             </Form>

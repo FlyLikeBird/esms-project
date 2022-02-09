@@ -1,7 +1,8 @@
 import { routerRedux } from 'dva/router';
 import { login, userAuth, agentUserAuth, getNewThirdAgent, changePwd, changeActionPwd, checkPwd, setCompanyLogo, getWeather, getThirdAgentInfo, getCameraAccessToken } from '../services/userService';
 // import { uploadImg } from '../services/alarmService';
-import { message } from 'antd';
+import { message, notification } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import config from '../../../config';
 import { md5, encryptBy, decryptBy } from '../utils/encryption';
 import moment from 'moment';
@@ -25,24 +26,38 @@ function createWebSocket(url, data, companyId, dispatch){
         //     ws.send(`agent:${data.agent_id}`);
         // }
         ws.send(`switch:${companyId}`);
+        ws.send(`login:${data.user_id}`);
+       
     };
-    ws.onclose = function(){
-        console.log('socket close...');
-        reconnect(url, data, companyId, dispatch);
-    };
+    // ws.onclose = function(){
+    //     console.log('socket close...');
+    //     reconnect(url, data, companyId, dispatch);
+    // };
     ws.onerror = function(){
         console.log('socket error...');
         reconnect(url, data, companyId, dispatch);
     };
-    ws.onmessage = (e)=>{
+    ws.onmessage = (e)=>{    
         if ( dispatch ) {   
-            let data = JSON.parse(e.data); 
-            // console.log(data);
-            if ( data.type === 'company'){
-                dispatch({ type:'setMsg', payload:{ data }});
-            } else if ( data.type === 'agent'){
-                dispatch({ type:'setAgentMsg', payload:{ data }})
-            }                       
+            if ( e.data === 'offline') {
+                dispatch({ type:'user/loginOut'});
+                notification.open({
+                    message: '下线通知',
+                    description:'该账号已在其他终端登录，您已退出登录',
+                    duration:0,
+                    className:'custom-info'
+                    // icon: <InfoCircleOutlined style={{ color: '#108ee9' }} />
+                });
+                return;
+            } else {
+                let data = JSON.parse(e.data); 
+                if ( data.type === 'company'){
+                    dispatch({ type:'setMsg', payload:{ data }});
+                } else if ( data.type === 'agent'){
+                    dispatch({ type:'setAgentMsg', payload:{ data }});
+                } 
+            }
+                                  
         }
     }
     return ws;
@@ -145,7 +160,7 @@ export default {
     effects:{
         *userAuth(action, {call, select, put, all}){ 
             try {
-                let { user: { userInfo, authorized, socket, newThirdAgent }} = yield select();
+                let { user: { userInfo, authorized, newThirdAgent }} = yield select();
                 let { dispatch, query, pathname, resolve, reject } = action.payload || {};
                 // 如果是第三方服务商
                 let thirdAgent;
@@ -239,21 +254,14 @@ export default {
             }
         },
         *loginOut(action, { call, put, select }){
-            let { user:{ userInfo, thirdAgent }} = yield select();
-            if ( Object.keys(thirdAgent).length ){
-                yield put({ type:'clearUserInfo'});
-                yield put({ type:'switchMach/reset'});
-                yield put(routerRedux.push('/login'));
-                // yield put(routerRedux.push(`/login?agent=${encryptBy(thirdAgent.agent_id)}`)); 
-            } else {
-                yield put({type:'clearUserInfo'});
-                yield put({ type:'switchMach/reset'});
-                yield put(routerRedux.push('/login'));
-            }
             if ( socket && socket.close ){
                 socket.close();
                 socket = null;
             }
+            yield put({type:'clearUserInfo'});
+            yield put({ type:'switchMach/reset'});
+            yield put(routerRedux.push('/login'));
+            
         },
         *thirdAgentAuth(action, { call, put}){
             let { pathname, search } = action.payload || {};
@@ -277,16 +285,6 @@ export default {
 
             }
         },
-        // *upload(action, { select, call, put}){
-        //     let { user:{ company_id }} = yield select();
-        //     let { file, resolve, reject } = action.payload || {};
-        //     let { data } = yield call(uploadImg, { file });
-        //     if ( data && data.code === '0'){
-        //         if ( resolve && typeof resolve === 'function' ) resolve(data.data);
-        //     } else {
-        //         if ( reject && typeof reject === 'function' ) reject();
-        //     }
-        // },
         *changeCompanyLogo(action, { put, call, select }){
             try {
                 let { user:{ company_id }} = yield select();

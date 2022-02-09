@@ -21,6 +21,9 @@ function LineChart({ xData, yData, y2Data }){
         },
         data:y2Data
     });
+    let temp = yData.concat(y2Data);
+    temp.sort((a,b)=>b-a);
+    let maxValue = temp[0] || 0;
     return (
         <ReactEcharts
             notMerge={true}
@@ -35,6 +38,15 @@ function LineChart({ xData, yData, y2Data }){
                     left:10,
                     right:20,
                     containLabel:true
+                },
+                legend:{
+                    data:['安全告警','通讯告警'],
+                    icon:'circle',
+                    itemWidth:8,
+                    itemHeight:8,
+                    textStyle:{
+                        color:'#fff'
+                    }
                 },
                 xAxis: {
                     type: 'category',
@@ -55,10 +67,12 @@ function LineChart({ xData, yData, y2Data }){
                         color:'#b0b0b0'
                     },
                     nameGap:10,
+                    min:0,
+                    max:maxValue + 20,
                     axisTick:{ show:false },
                     axisLabel:{ color:'#b0b0b0' },
                     axisLine:{ show:false },
-                    interval:1,
+                    splitNumber:8,
                     splitLine:{
                         lineStyle:{
                             type:'dashed',

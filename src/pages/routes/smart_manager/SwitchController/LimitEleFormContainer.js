@@ -28,7 +28,7 @@ function TempFormContainer({ dispatch, switchMach }){
     let { limitEleInfo } = switchMach;
     const [form] = Form.useForm();
     useEffect(()=>{
-        dispatch({ type:'switchMach/fetchLimitEle' });
+        dispatch({ type:'switchMach/initLimitEle' });
     },[]);
     useEffect(()=>{
         if ( Object.keys(limitEleInfo).length ){

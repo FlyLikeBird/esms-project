@@ -76,7 +76,7 @@ function AddForm({ info, AMap, forMachs, gatewayList, managerList, switchModel, 
             }
         }
     },[AMap, visible]);
-    useEffect(()=>{
+    useEffect(()=>{        
         form.setFieldsValue({
             meter_name : info.forEdit ? info.currentMach.meter_name : null,
             register_code: info.forEdit ? info.currentMach.register_code : null,
@@ -84,7 +84,7 @@ function AddForm({ info, AMap, forMachs, gatewayList, managerList, switchModel, 
             gateway_id : info.forEdit ? info.currentMach.gateway_id : null,
             model_code : info.forEdit ? info.currentMach.model_code : null,
             order_by : info.forEdit ? info.currentMach.order_by : null,
-            switch_parent : info.forEdit ? info.currentMach.switch_parent : null,
+            switch_parent : info.forEdit ? info.currentMach.switch_parent ? info.currentMach.switch_parent : null : null,
             person_id : info.forEdit ? info.currentMach.person_id : null
         });
         
@@ -111,7 +111,7 @@ function AddForm({ info, AMap, forMachs, gatewayList, managerList, switchModel, 
                     }
                     // console.log(values);
                     new Promise((resolve,reject)=>{
-                        onDispatch({ type: forMachs ? 'controller/add' : 'gateway/add', payload:{ values, resolve, reject, forEdit:info.forEdit }});
+                        onDispatch({ type: forMachs ? 'controller/add' : 'gateway/add', payload:{ values, resolve, reject, forEdit:info.forEdit, forceUpdate:true }});
                     })
                     .then(()=>{
                         onClose();
@@ -156,7 +156,7 @@ function AddForm({ info, AMap, forMachs, gatewayList, managerList, switchModel, 
                     null
                 }
                 <Form.Item name='register_code' label='注册码' rules={[ { required:true, message:'注册码不能为空' }]}>
-                    <Input />
+                    <Input disabled={ info.forEdit ? true : false } />
                 </Form.Item>
                 {
                     forMachs 

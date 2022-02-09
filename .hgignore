@@ -4,3 +4,5 @@ syntax:global
 node_modules/*
 dist/*
 .git/*
+src/.umi
+src/.umi-production
